@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Language Selection</title>
+    <style>
+        /* Updated CSS */
+        .language-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            max-width: 800px;
+            width: 100%;
+            margin: 30px auto;
+        }
+
+        .language-card {
+            position: relative;
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 2px solid #ddd;
+        }
+
+        .language-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .language-card.selected {
+            border-color: #2196F3;
+            background-color: #e3f2fd;
+        }
+
+        .language-flag {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 50%;
+            margin-bottom: 15px;
+            border: 2px solid #eee;
+        }
+
+        .confirm-button {
+            margin: 30px auto;
+            display: block;
+        }
+
+        /* Better radio input handling */
+        .language-card input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            height: 0;
+            width: 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Which Language Would You Like to Learn?</h1>
+    
+    <form method="post" action="{% url 'lang_selection' %}">
+        {% csrf_token %}
+        
+        <div class="language-grid">
+            {% for code, name, flag, description in languages %}
+            <label class="language-card">
+                <input type="radio" name="language" value="{{ code }}" required>
+                <img src="{{ flag }}" alt="{{ name }} Flag" class="language-flag">
+                <h2>{{ name }}</h2>
+                <p>{{ description }}</p>
+            </label>
+            {% endfor %}
+        </div>
+
+        <button type="submit" class="confirm-button">Start Learning!</button>
+    </form>
+
+    <script>
+        // Enhanced selection script
+        document.querySelectorAll('.language-card').forEach(card => {
+            const radio = card.querySelector('input[type="radio"]');
+            
+            card.addEventListener('click', () => {
+                // Remove selection from all cards
+                document.querySelectorAll('.language-card').forEach(c => {
+                    c.classList.remove('selected');
+                    c.querySelector('input').checked = false;
+                });
+                
+                // Add selection to clicked card
+                card.classList.add('selected');
+                radio.checked = true;
+            });
+        });
+    </script>
+</body>
+</html>

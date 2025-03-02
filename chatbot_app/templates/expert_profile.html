@@ -1,0 +1,70 @@
+{% extends 'expertheader.html' %}
+{% block content %}
+{% load static %}
+
+<html>
+    <head>
+        <title>Expert Profile</title>
+        {% comment %} <link rel="stylesheet" href="{% static 'user/css/style.css' %}"> {% endcomment %}
+
+
+    </head>
+x   <body>
+    <center>   
+        <table class="form-class">
+        <h2>Expert Profile</h2>
+        <br><br>
+
+        <form method="POST">
+            {% csrf_token %}
+            <tr>
+                <td style="padding:5px;"><label>Name</label></td>
+                <td style ="padding:5px">{{form.name}}</td>
+            </tr>
+
+           
+            <tr>
+                <td style="padding:5px;"><label>Gender</label></td>
+                <td style="padding:5px;">{{form.gender}}</td>
+            </tr>
+        
+
+            <tr>
+                <td style="padding:5px;"><label>Age</label></td>
+                <td style="padding:10px;">{{form.age}}</td>
+            </tr>
+
+            <tr>
+                <td style="padding:5px;"><label>Language</label></td>
+                <td style="padding:5px;">{{form.language}}</td>
+            </tr>
+            <tr>
+                <td style="padding:5px;"><label>Experience</label></td>
+                <td style="padding:5px;">{{form.experience}}</td>
+            </tr>
+           
+            <tr>
+                <td style="padding:5px;"><label>Contact</label></td>
+                <td style="padding:5px;">{{form.contact_number}}</td>
+            </tr>
+                <td style="padding:5px;"><label>Email</label></td>
+                <td style="padding:5px;">{{form1.email}}</td>
+            </tr>
+       
+        <tr>
+            
+            <td colspan="2">    
+                <div style="text-align: center;">
+                    <br><br>
+                <button type="submit" class="btn btn-primary" style="width: 100px; margin: 0 auto;"> Edit </button>
+            </div>
+
+            </td>
+        </tr>   
+    </form>
+</table>   
+ </center>
+ 
+    </body>
+</html>
+{% endblock %}

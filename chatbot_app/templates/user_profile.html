@@ -1,0 +1,57 @@
+{% extends 'user_header.html' %}
+{% block content %}
+{% load static %}
+
+<html>
+    <head>
+        <title>User Profile</title>
+        <link rel="stylesheet" href="{% static 'user/css/style.css' %}">
+
+
+    </head>
+x   <body>
+    <center>   
+        <table class="form-class">
+        <h2>User Profile</h2>
+        <br><br>
+
+        <form method="POST">
+            {% csrf_token %}
+           
+        <tr>
+            <td><label>Name</label></td>
+            <td>{{form.name}}</td>
+        </tr>
+
+
+        <tr>
+        
+            <td><label>Contact</label></td>
+            <td>{{form.contact}}</td>
+        </tr>
+
+        <tr>
+        
+            <td><label>Email</label></td>
+            <td>{{form1.email}}</td>
+        </tr>
+
+        
+       
+        <tr>
+            
+            <td colspan="2">    
+                <div style="text-align: center;">
+                    <br><br>
+                <button type="submit" class="btn btn-primary" style="width: 100px; margin: 0 auto;"> Edit</button>
+            </div>
+
+            </td>
+        </tr>   
+    </form>
+</table>   
+ </center>
+ 
+    </body>
+</html>
+{% endblock %}

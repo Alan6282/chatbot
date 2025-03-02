@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Language Selection</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f2f5;
+        }
+
+        .language-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            max-width: 800px;
+            width: 100%;
+            margin-top: 30px;
+        }
+
+        .language-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: 2px solid transparent;
+        }
+
+        .language-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .language-card.selected {
+            border-color: #2196F3;
+            background-color: #e3f2fd;
+        }
+
+        .language-flag {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 50%;
+            margin-bottom: 10px;
+        }
+
+        .confirm-button {
+            margin-top: 30px;A
+            padding: 12px 30px;
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            display: none;
+        }
+
+        .confirm-button:hover {
+            background-color: #1976D2;
+        }
+
+        h1 {
+            color: #1a237e;
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+    {% csrf_token %} 
+    <h1>Which Language Would You Like to Learn?</h1>
+    
+    <div class="language-grid">
+        <div class="language-card" data-lang="es">
+            <img src="https://flagcdn.com/w40/es.png" alt="Spanish Flag" class="language-flag">
+            <h2>Spanish</h2>
+            <p>Learn the world's second-most spoken native language</p>
+        </div>
+
+        <div class="language-card" data-lang="fr">
+            <img src="https://flagcdn.com/w40/fr.png" alt="French Flag" class="language-flag">
+            <h2>French</h2>
+            <p>Language of love, fashion, and cuisine</p>
+        </div>
+
+        <div class="language-card" data-lang="de">
+            <img src="https://flagcdn.com/w40/de.png" alt="German Flag" class="language-flag">
+            <h2>German</h2>
+            <p>Key language for business in Europe</p>
+        </div>
+
+        <div class="language-card" data-lang="it">
+            <img src="https://flagcdn.com/w40/it.png" alt="Italian Flag" class="language-flag">
+            <h2>Italian</h2>
+            <p>Discover the language of art and history</p>
+        </div>
+
+        <div class="language-card" data-lang="ja">
+            <img src="https://flagcdn.com/w40/jp.png" alt="Japanese Flag" class="language-flag">
+            <h2>Japanese</h2>
+            <p>Master the language of anime and technology</p>
+        </div>
+
+        <div class="language-card" data-lang="zh">
+            <img src="https://flagcdn.com/w40/cn.png" alt="Chinese Flag" class="language-flag">
+            <h2>Mandarin</h2>
+            <p>Learn the world's most spoken language</p>
+        </div>
+    </div>
+
+    <button class="confirm-button" id="confirmBtn">Start Learning!</button>
+
+    <script>
+        // Language selection logic
+        const cards = document.querySelectorAll('.language-card');
+        const confirmBtn = document.getElementById('confirmBtn');
+        let selectedLanguage = null;
+
+        cards.forEach(card => {
+            card.addEventListener('click', () => {
+                // Remove selection from all cards
+                cards.forEach(c => c.classList.remove('selected'));
+                // Add selection to clicked card
+                card.classList.add('selected');
+                selectedLanguage = card.dataset.lang;
+                // Show confirm button
+                confirmBtn.style.display = 'block';
+            });
+        });
+
+        confirmBtn.addEventListener('click', () => {
+            if(selectedLanguage) {
+                // Send data to Django
+                fetch('/save-language/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                    },
+                    body: JSON.stringify({
+                        'language': selectedLanguage
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if(data.status === 'success') {
+                        window.location.href = data.redirect_url;
+                    } else {
+                        alert('Error saving selection: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            }
+        });
+        
+    </script>
+</body>
+</html>

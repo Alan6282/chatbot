@@ -1,0 +1,73 @@
+{% extends 'indexheader.html' %}
+{% block content %}
+{% load static %}
+
+<html>
+    <head>
+        <title>Expert Registration</title>
+        {% comment %} <link rel="stylesheet" href="{% static 'user/css/style.css' %}"> {% endcomment %}
+
+
+    </head>
+x   <body>
+    <center>   
+        <table class="form-class">
+        <h2>Expert Registration</h2>
+        <br><br>
+
+        <form method="POST">
+            {% csrf_token %}
+            <tr>
+                <td><label>Name</label></td>
+                <td>{{form.name}}</td>
+            </tr>
+           
+            <tr>
+                <td><label>Gender</label></td>
+                <td>{{form.gender}}</td>
+            </tr>
+
+            <tr>
+                <td><label>Age</label></td>
+                <td>{{form.age}}</td>
+            </tr>
+
+            <tr>
+                <td><label>Language</label></td>
+                <td>{{form.language}}</td>
+            </tr>
+            <tr>
+                <td><label>Experience</label></td>
+                <td>{{form.experience}}</td>
+            </tr>
+           
+            <tr>
+                <td><label>Contact</label></td>
+                <td>{{form.contact_number}}</td>
+            </tr>
+                <td><label>Email</label></td>
+                <td>{{form_1.email}}</td>
+            </tr>
+            <tr>
+                <td><label>password</label></td>
+                <td>{{form_1.password}}</td>
+            </tr>
+           
+       
+        <tr>
+            
+            <td colspan="2">    
+                <div style="text-align: center;">
+                    <br><br>
+                <button type="submit" class="btn btn-primary" style="width: 100px; margin: 0 auto;"> Register</button>
+            </div>
+
+            </td>
+        </tr>   
+    </form>
+</table>   
+ </center>
+ 
+    </body>
+</html>
+{% endblock %}

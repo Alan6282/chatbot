@@ -1,0 +1,24 @@
+from django.urls import path
+from .views import *
+urlpatterns =[
+    path('',index,name='index'),
+    path('ad',admin,name='admin'),
+    # path('login',login,name='login'),
+    path('user_det',user_registration,name='user_details'),
+    path('loginsform',logins,name='logins'),
+    path('user_home',user_home,name='user_home'),
+    path('expert_r',expert_reg,name='expert_register'),
+    path('expert_home',expert_home,name='expert_home'),
+    path('user_pro',user_profile,name='user_prof'),
+    path('expert_pro',expert_profile,name='expert_prof'),
+    path('user_table',admin_user,name='admin_user'),
+    path('expert_table',admin_expert,name='admin_expert'),
+    path('user_expert_search',user_expert_search,name='user_expert_search'),
+    path('approve/<int:login_id>/',exp_approve,name='approve'),
+    path('reject/<int:login_id>/',exp_reject,name='reject'),
+    path('chatinterface/<int:login_id>/',chat_with_expert,name='chatinterface'),
+    path('user_view',user_view,name='user_view'),
+    path('chat_with_user/<int:login_id>/',chat_with_user,name='chat_with_user'),
+    # path('save-language/',lang_selection,name='lang_selection')
+    path('lang_selection',lang_selection,name='lang_selection')
+]
