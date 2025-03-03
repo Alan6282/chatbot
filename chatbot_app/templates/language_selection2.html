@@ -62,7 +62,7 @@
 <body>
     <h1>Which Language Would You Like to Learn?</h1>
     
-    <form method="post" action="{% url 'lang_selection' %}">
+    <form method="post">
         {% csrf_token %}
         
         <div class="language-grid">

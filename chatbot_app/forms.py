@@ -1,5 +1,5 @@
 from django import forms
-from .models import user_det,user_login,Expert_det,Language_selection
+from .models import user_det,user_login,Expert_det,Language_selection,AssessmentQuestion
 
 class user_details(forms.ModelForm):
     class Meta:
@@ -53,6 +53,10 @@ class lang_selectionForm(forms.ModelForm):
     class Meta:
         model= Language_selection
         fields=['language']
+class Question_from(forms.ModelForm):
+    class Meta:
+        model= AssessmentQuestion
+        fields=['language','question_text','difficulty','options1','options2','options3','correct_answer']
 
        
     

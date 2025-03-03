@@ -226,6 +226,8 @@ def chat_with_user(request,login_id):
 #         )
 
 #     return render(request,'language_selection.html')
+def Assessment(request):
+    return render(request,'assessment_quest.html')
 def lang_selection(request):
         languages = [
         ('es', 'Spanish', 'https://flagcdn.com/w40/es.png', 
@@ -251,10 +253,21 @@ def lang_selection(request):
             data=form.save(commit=False)
             data.user_id=id
             data.save()
+            return redirect('Question')
         else:
             form=lang_selectionForm()
          
         return render(request,'language_selection2.html',{'form':form,'languages':languages})
+def Question(request):
+    if request.method == 'POST':
+        form=Question_from(request.POST)
+        if form.is_valid():
+            form.save()
+        
+    else:
+     form =Question_from()
+     return render(request,'admin_assessment_quest.html',{'form':form})
+
 
 
     

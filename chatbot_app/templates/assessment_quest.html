@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="assessment-container">
+    <h1>{{ language.name }} Proficiency Test</h1>
+    
+    <!-- Direct Level Selection -->
+    <div class="level-select">
+        <h3>Or select your level directly:</h3>
+        {% for code, level in levels %}
+            <button class="level-btn" data-level="{{ code }}">
+                {{ level }}
+            </button>
+        {% endfor %}
+    </div>
+
+    <!-- Dynamic Questions -->
+    <form method="post" id="assessmentForm">
+        {% csrf_token %}
+        {% for question in questions %}
+            <div class="question-card">
+                <p>{{ question.question }}</p>
+                {% for key, value in question.options.items %}
+                    <label>
+                        <input type="radio" name="q{{ forloop.counter }}" 
+                               value="{{ key }}" required>
+                        {{ value }}
+                    </label>
+                {% endfor %}
+            </div>
+        {% endfor %}
+        <button type="submit">Complete Assessment</button>
+    </form>
+</div>
+
+<script>
+document.querySelectorAll('.level-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+        // Auto-fill form with level selection
+        document.getElementById('levelInput').value = e.target.dataset.level;
+        document.getElementById('assessmentForm').submit();
+    });
+});
+</script>
+{% endblock %}

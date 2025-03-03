@@ -20,5 +20,7 @@ urlpatterns =[
     path('user_view',user_view,name='user_view'),
     path('chat_with_user/<int:login_id>/',chat_with_user,name='chat_with_user'),
     # path('save-language/',lang_selection,name='lang_selection')
-    path('lang_selection',lang_selection,name='lang_selection')
+    path('lang_selection',lang_selection,name='lang_selection'),
+    path('Assessment',Assessment,name='Assessment'),
+    path('Question',Question,name='Question')
 ]

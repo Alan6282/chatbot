@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Questions</title>
+</head>
+<body>
+    <center>   
+        <table class="form-class">
+        <h2>Create Questions</h2>
+        <br><br>
+
+    
+    <form method="POST">
+        {% csrf_token %}
+       
+    <tr>
+        <td><label>Language</label></td>
+        <td>{{form.language}}</td>
+    </tr>
+
+
+    <tr>
+    
+        <td><label>Difficulty</label></td>
+        <td>{{form.difficulty}}</td>
+    </tr>
+
+    <tr>
+    
+        <td><label>Question</label></td>
+        <td>{{form.question_text}}</td>
+    </tr>
+
+    <tr>
+    
+        <td><label>Option-1</label></td>
+        <td>{{form.options1}}</td>
+    </tr>
+    <tr>
+    
+        <td><label>Option-2</label></td>
+        <td>{{form.options2}}</td>
+    </tr>
+    <tr>
+    
+        <td><label>Option-3</label></td>
+        <td>{{form.options3}}</td>
+    </tr>
+    <tr>
+    
+        <td><label>Correct Answer</label></td>
+        <td>{{form.correct_answer}}</td>
+    </tr>
+   
+   
+    <tr>
+        
+        <td colspan="2">    
+            <div style="text-align: center;">
+                <br><br>
+            <button type="submit" class="btn btn-primary" style="width: 100px; margin: 0 auto;">Add</button>
+        </div>
+
+        </td>
+    </tr>   
+</form>
+</table>
+</center>
+
+    
+</body>
+</html>
