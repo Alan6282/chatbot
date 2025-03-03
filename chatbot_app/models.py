@@ -55,14 +55,17 @@ class AssessmentQuestion(models.Model):
         ('B1', 'Intermediate'), ('B2', 'Upper Intermediate'),
         ('C1', 'Advanced'), ('C2', 'Mastery')
     ]
+    languages=[
+        ('es', 'Spanish'),('fr', 'French',),('de', 'German'),('it', 'Italian'),('ja', 'Japanese'),('zh', 'Mandarin')
+    ]
     
     
-    language = models.CharField(max_length=50)
+    language = models.CharField(max_length=2, choices=languages)
     question_text = models.TextField()
     options1 = models.CharField(max_length=100)
     options2 = models.CharField(max_length=100)
     options3 = models.CharField(max_length=100)
-    correct_answer = models.CharField(max_length=1)
+    correct_answer = models.CharField(max_length=100)
     difficulty = models.CharField(max_length=2, choices=DIFFICULTY_LEVELS)
 
 

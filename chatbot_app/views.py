@@ -265,8 +265,8 @@ def Question(request):
             form.save()
         
     else:
-     form =Question_from()
-     return render(request,'admin_assessment_quest.html',{'form':form})
+        form =Question_from()
+    return render(request,'admin_assessment_quest.html',{'form':form})
 
 
 
