@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz</title>
+    <style>
+      body{
+        font-family:Arial,sans-serif;
+        background:#f4f4f9;
+        display:flex;
+        justify-content:center;
+        align-items: center;
+        height:100vh;
+        padding:20px;
+      }
+      .quiz-container{
+        background:white;
+        max-width:600px;
+        width:100%;
+        padding:20px;
+        border-radius:12px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        text-align:center;
+      }
+      .submit-btn{
+        background:#007bff;
+        color:white;
+        padding:12px 20px;
+        font-size:18px;
+        border:none;
+        cursor:pointer;
+        width:100%;
+        margin-top: 20px;
+        border-radius:6px;
+        transition: background 0.3s;
+      }
+      submit-btn:hover{
+        background:#0056b3;
+      }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <h2>Questions</h2>
+        <form method="POST">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="submit-btn">Submit</button>
+        </form>
+    </div>
+    
+</body>
+</html>

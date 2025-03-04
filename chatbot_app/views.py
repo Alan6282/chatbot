@@ -253,13 +253,14 @@ def lang_selection(request):
             data=form.save(commit=False)
             data.user_id=id
             data.save()
-            return redirect('Question')
+            return redirect('difficulty',id=data.id)
         else:
             form=lang_selectionForm()
          
         return render(request,'language_selection2.html',{'form':form,'languages':languages})
 def Question(request):
     if request.method == 'POST':
+
         form=Question_from(request.POST)
         if form.is_valid():
             form.save()
@@ -267,19 +268,57 @@ def Question(request):
     else:
         form =Question_from()
     return render(request,'admin_assessment_quest.html',{'form':form})
+def difficulty(request,id):
+    if request.method == 'POST':
+        diff=Language_selection.objects.get(id=id)
+        form=Difficulty_form(request.POST,instance=diff)
+        if form.is_valid():
 
+          form.save()
+          return redirect('quiz_page',id=diff.id)
 
+    else:
+       form=Difficulty_form()
+    return render(request,'lang_difficulty.html',{'form':form})
+def quiz_page(request, id):
+    print("hi",id)
+    user = Language_selection.objects.get(id=id)
+    selected_language = user.language
+    selected_difficulty = user.difficulty
+    questions = AssessmentQuestion.objects.filter(language=selected_language, difficulty=selected_difficulty )
 
-    
-        
+    # Get the current question index from the session, default to 0 if not set
+    current_question_index = request.session.get('current_question_index', 0)
 
+    # Check if the current question index is valid
+    # if current_question_index >= len(questions):
+    #     return redirect("quiz_result")
 
-    
-    
+    # Get the current question
+    print(current_question_index)
+    current_question = questions[current_question_index]
 
+    if request.method == "POST":
+        form = QuizForm(request.POST, question=current_question)
+        if form.is_valid():
+            # Check the answer and update score if correct
+            user_answer = form.cleaned_data['answer']
+            score = request.session.get('score', 0)
 
-    
-        
+            if user_answer == current_question.correct_answer:
+                score += 1
 
+            # Update score in session
+            request.session['score'] = score
+            # Move to the next question
+            current_question_index += 1
+            request.session['current_question_index'] = current_question_index
+            user.update(score=score)
 
-    
+            # Redirect to the same page to load the next question
+            return redirect('quiz_page', id=id)
+
+    else:
+        form = QuizForm(question=current_question)
+
+    return render(request, "quiz.html", {"form": form, "question": current_question})

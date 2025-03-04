@@ -22,5 +22,7 @@ urlpatterns =[
     # path('save-language/',lang_selection,name='lang_selection')
     path('lang_selection',lang_selection,name='lang_selection'),
     path('Assessment',Assessment,name='Assessment'),
-    path('Question',Question,name='Question')
+    path('Question',Question,name='Question'),
+    path('difficulty/<int:id>/',difficulty,name='difficulty'),
+    path('quiz_page/<int:id>/',quiz_page,name='quiz_page')
 ]

@@ -45,10 +45,19 @@ class Expert_user_chat(models.Model):
 #     description = models.TextField()
 
 class Language_selection(models.Model):
+    DIFFICULTY_LEVELS = [
+        ('A1', 'Beginner'), ('A2', 'Elementary'),
+        ('B1', 'Intermediate'), ('B2', 'Upper Intermediate'),
+        ('C1', 'Advanced'), ('C2', 'Mastery')
+    ]
     language=models.CharField(max_length=50)
+    difficulty = models.CharField(max_length=2, choices=DIFFICULTY_LEVELS,null=True)
+    score=models.IntegerField(null=True)
     current_date=models.DateField(auto_now_add=True)
     current_time=models.TimeField(auto_now_add=True)
     user_id =models.ForeignKey('user_login', on_delete=models.CASCADE,related_name="user_lan_selection")
+
+    
 class AssessmentQuestion(models.Model):
     DIFFICULTY_LEVELS = [
         ('A1', 'Beginner'), ('A2', 'Elementary'),

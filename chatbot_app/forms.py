@@ -57,7 +57,21 @@ class Question_from(forms.ModelForm):
     class Meta:
         model= AssessmentQuestion
         fields=['language','question_text','difficulty','options1','options2','options3','correct_answer']
-
-       
-    
-
+class Difficulty_form(forms.ModelForm):
+    class Meta:
+        model =Language_selection
+        fields=['difficulty']
+class QuizForm(forms.Form):
+    def __init__(self, *args, question=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        if question:
+            self.fields['answer'] = forms.ChoiceField(
+                label=question.question_text,
+                choices=[
+                    (question.options1, question.options1),
+                    (question.options2, question.options2),
+                    (question.options3, question.options3),
+                ],
+                widget=forms.RadioSelect,
+                required=True
+            )
