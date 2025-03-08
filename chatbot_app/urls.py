@@ -24,5 +24,9 @@ urlpatterns =[
     path('Assessment',Assessment,name='Assessment'),
     path('Question',Question,name='Question'),
     path('difficulty/<int:id>/',difficulty,name='difficulty'),
-    path('quiz_page/<int:id>/',quiz_page,name='quiz_page')
-]
+    path('quiz_page/<int:id>/',quiz_page,name='quiz_page'),
+    path('quiz_result/<int:id>/',quiz_result,name='quiz_result'),
+    path('LangDet',admin_user_langSelect,name='LangDet')
+
+
+    ]

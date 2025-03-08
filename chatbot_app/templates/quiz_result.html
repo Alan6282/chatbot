@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Result</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: #f4f4f9;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        padding: 20px;
+      }
+      .result-container {
+        background: white;
+        max-width: 500px;
+        width: 100%;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        text-align: center;
+      }
+      .score {
+        font-size: 24px;
+        font-weight: bold;
+        color: #007bff;
+      }
+      .btn {
+        display: inline-block;
+        margin-top: 20px;
+        padding: 12px 20px;
+        font-size: 18px;
+        background: #007bff;
+        color: white;
+        text-decoration: none;
+        border-radius: 6px;
+        transition: background 0.3s;
+      }
+      .btn:hover {
+        background: #0056b3;
+      }
+    </style>
+</head>
+<body>
+    <div class="result-container">
+        <h2>Quiz Completed!</h2>
+        <p>Thank you for taking the quiz, <strong>{{ user.user_id.username }}</strong>!</p>
+        <p>Your Score: <span class="score">{{ score }}</span></p>
+        <a href="{% url 'lang_selection' %}" class="btn">Take Another Quiz</a>
+    </div>
+</body>
+</html>
