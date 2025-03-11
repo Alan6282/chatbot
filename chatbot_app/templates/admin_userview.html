@@ -820,18 +820,37 @@
 <th>Name</th>
 <th>Contact</th>
 <th>Email</th>
-<th>Language Selection</th>
+<th>Selected Language</th>
+<th>Difficulty</th>
+<th>Score</th>
 </tr>
-{% for i in data %}
+{% for user in users %}
 </thead>
 <tbody>
 <tr>
 
-<td>{{i.name}}</td>
-<td>{{i.contact}}</td>
-<td>{{i.login_id.email}}</td>
-<td>View Details</td>
+<td>{{user.name}}</td>
+<td>{{user.contact}}</td>
+<td>{{user.login_id.email}}</td>
+
+<td>
+	{% for lang in user.login_id.user_lan_selection.all %}
+		{{ lang.language }}<br>
+	{% endfor %}
+</td>
+<td>
+	{% for lang in user.login_id.user_lan_selection.all %}
+		{{ lang.difficulty }}<br>
+	{% endfor %}
+</td>
+<td>
+	{% for lang in user.login_id.user_lan_selection.all %}
+		{{ lang.score }}<br>
+	{% endfor %}
+</td>
+
 </tr>
+
 {% endfor %}
 
 {% comment %} <tr>

@@ -3,7 +3,7 @@ from .views import *
 urlpatterns =[
     path('',index,name='index'),
     path('ad',admin,name='admin'),
-    # path('login',login,name='login'),
+    #path('login',login,name='login'),
     path('user_det',user_registration,name='user_details'),
     path('loginsform',logins,name='logins'),
     path('user_home',user_home,name='user_home'),
@@ -14,6 +14,7 @@ urlpatterns =[
     path('user_table',admin_user,name='admin_user'),
     path('expert_table',admin_expert,name='admin_expert'),
     path('user_expert_search',user_expert_search,name='user_expert_search'),
+    path('user_expert_search/<int:login_id>/',expert_request,name='user_expert_search'),
     path('approve/<int:login_id>/',exp_approve,name='approve'),
     path('reject/<int:login_id>/',exp_reject,name='reject'),
     path('chatinterface/<int:login_id>/',chat_with_expert,name='chatinterface'),
@@ -26,7 +27,9 @@ urlpatterns =[
     path('difficulty/<int:id>/',difficulty,name='difficulty'),
     path('quiz_page/<int:id>/',quiz_page,name='quiz_page'),
     path('quiz_result/<int:id>/',quiz_result,name='quiz_result'),
-    path('LangDet',admin_user_langSelect,name='LangDet')
-
-
-    ]
+    path('LangDet',admin_user_langSelect,name='LangDet'),
+    path('conference',conference,name='conference'),
+    path('expert_request',expert_dashboard,name='expert_request'),
+    path('accept_request/<int:request_id>/',accept_request, name='accept_request'),
+    path('reject_request/<int:request_id>/',reject_request, name='reject_request'),
+  ]

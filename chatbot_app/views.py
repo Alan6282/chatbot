@@ -4,6 +4,8 @@ from .forms import *
 from django.contrib import messages
 from .models import *
 from django.http import JsonResponse
+from django.utils import timezone
+import datetime
 # Create your views here.
 def index(request):
     return render(request,'index.html')
@@ -110,8 +112,10 @@ def expert_profile(request):
         form1=logindata(instance=login_det)
     return render(request,'expert_profile.html',{'form':form,'form1':form1})
 def admin_user(request):
-    data=user_det.objects.all()
-    return render(request,'admin_userview.html',{'data':data})
+        users = user_det.objects.select_related('login_id').prefetch_related(
+        'login_id__user_lan_selection').all()
+
+        return render(request,'admin_userview.html',{'users':users})
 def admin_expert(request):
     expert_data=Expert_det.objects.all()
     return render(request,'admin_expertview.html',{'expert_data':expert_data})
@@ -388,3 +392,73 @@ def quiz_result(request, id):
     return render(request, "quiz_result.html", {"user": user, "score": score})
 def admin_user_langSelect(request):
     return render(request,'admin_user_view.html')
+def conference(request):
+    return render(request,'video_conference.html')
+def expert_request(request,login_id):
+    #getting userid from session 
+    user_id=request.session.get('userid')
+    #getting user,expert instance from user_login table 
+    user_data=user_login.objects.get(id=user_id)   
+    expert = user_login.objects.get(id=login_id)
+    #save the Value in database with status 1 as Pending 
+    Expert_request.objects.create(user_id=user_data,expert_id=expert,status=1)
+    #redirect to the same page 
+    return redirect('user_expert_search')
+def expert_dashboard(request):
+    #getting the expertid from session
+    expert_id=request.session.get('expertid')
+    if not expert_id:
+        return redirect('logins')  #Redirect to login if not authenticated
+    # Getting the requests for the expert
+    requests=Expert_request.objects.filter(
+        expert_id=expert_id,status=1 #Pending Requests
+    ).select_related('user_id__user_det')     #.prefetch_related('user_id__user_lan_selection')
+    return render(request,'expert_request.html',{'requests':requests})
+def accept_request(request, request_id):
+    # Update request status to accepted (assuming 2 = accepted)
+    Expert_request.objects.filter(id=request_id).update(status=2)
+    
+    # Redirect to video conference page
+    return redirect('expert_request', request_id=request_id)
+
+def reject_request(request, request_id):
+    # Update request status to rejected (assuming 3 = rejected)
+    Expert_request.objects.filter(id=request_id).update(status=3)
+    return redirect('expert_request')
+def schedule_conference(request,request_id):
+    # Getting  Expert who's id from url and expert_id from session  matches Expert_request Table row
+    expert_request=get_object_or_404(Expert_request,id=request_id,expert_id=request.session.get['expertid']) 
+    if request.method == 'POST':
+        try:
+            schedule_date=request.PODT.get('schedule_date')
+            schedule_time=request.POST.get('schedule_time')
+            
+            #combine Time and Date
+            schedule_datetime = datetime.datetime.strptime(
+                f"{schedule_date} {schedule_time}",
+                "%Y-%m-%d %H:%M"
+            )
+            if schedule_datetime <= timezone.now():
+                return render(request, 'schedule_conference.html', {
+                    'error': 'Please select a future date and time',
+                    'request_id': request_id
+                })
+            expert_request.schedule_date = schedule_date
+            expert_request.schedule_time = schedule_time
+            expert_request.status = 4  # Mark as scheduled
+            expert_request.save()
+
+            return redirect('expert_request')
+
+
+        except Exception as e:
+            return render(request, 'schedule_conference.html', {
+                'error': 'Invalid date/time format',
+                'request_id': request_id
+            })
+    # GET request - show form
+    return render(request, 'schedule_conference.html', {
+        'today': timezone.now().date(),
+        'request_id': request_id
+    })
+

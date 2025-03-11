@@ -5,7 +5,7 @@ from django.db import models
 class user_det(models.Model):
     name = models.CharField(max_length=100)
     contact =models.CharField(max_length=10)
-    login_id=models.ForeignKey('user_login',on_delete=models.CASCADE)
+    login_id=models.OneToOneField('user_login',on_delete=models.CASCADE,related_name='user_det')
 
 class user_login(models.Model):
     email=models.EmailField()
@@ -76,6 +76,14 @@ class AssessmentQuestion(models.Model):
     options3 = models.CharField(max_length=100)
     correct_answer = models.CharField(max_length=100)
     difficulty = models.CharField(max_length=2, choices=DIFFICULTY_LEVELS)
+class Expert_request(models.Model):
+    user_id=models.ForeignKey('user_login', on_delete=models.CASCADE,related_name="userid_request")
+    expert_id=models.ForeignKey('user_login', on_delete=models.CASCADE,related_name="expertid_request")
+    status=models.IntegerField(default=1)
+    current_date=models.DateField(auto_now_add=True)
+    current_time=models.TimeField(auto_now_add=True)
+    schedule_date=models.DateField(null=True)
+    schedule_time=models.TimeField(null=True)
 
 
 

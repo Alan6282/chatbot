@@ -28,7 +28,8 @@
                     <th>Language</th>
                     <th>Experience</th>
                     <th>Contact Number</th>
-                    <th></th>
+                    <th>Chat</th>
+                    <th>Video Conference<th>
                 </tr>
             </thead>
             <tbody>
@@ -41,6 +42,8 @@
                         <td>{{ expert.experience }}</td>
                         <td>{{ expert.contact_number }}</td>
                         <td class="btn btn-primary"><a href= "{% url 'chatinterface' expert.login_id.id %}">Chat Now</a></td>
+                        <td class="btn btn-primary"><a href= "{% url 'user_expert_search' expert.login_id.id %}">Request</a></td>
+
 
                     </tr>
                 {% endfor %}
