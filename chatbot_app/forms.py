@@ -1,5 +1,5 @@
 from django import forms
-from .models import user_det,user_login,Expert_det,Language_selection,AssessmentQuestion
+from .models import user_det,user_login,Expert_det,Language_selection,AssessmentQuestion,mock_test
 
 class user_details(forms.ModelForm):
     class Meta:
@@ -75,3 +75,28 @@ class QuizForm(forms.Form):
                 widget=forms.RadioSelect,
                 required=True
             )
+class Mock_Test(forms.ModelForm):
+    class Meta:
+        model = mock_test
+        fields=['language','question_text','options1','options2','options3','options4','correct_answer']
+
+class MockTestForm(forms.ModelForm):
+    class Meta:
+        model = mock_test
+        fields = []
+    
+    answer = forms.ChoiceField(
+        widget=forms.RadioSelect,
+        required=True
+    )
+
+    def __init__(self, *args, **kwargs):
+        question = kwargs.pop('question', None)
+        super().__init__(*args, **kwargs)
+        if question:
+            self.fields['answer'].choices = [
+                (question.options1, question.options1),
+                (question.options2, question.options2),
+                (question.options3, question.options3),
+                (question.options4, question.options4),
+            ]

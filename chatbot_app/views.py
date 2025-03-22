@@ -6,6 +6,7 @@ from .models import *
 from django.http import JsonResponse
 from django.utils import timezone
 import datetime
+import json
 # Create your views here.
 def index(request):
     return render(request,'index.html')
@@ -17,7 +18,7 @@ def user_registration(request):
     if request.method == 'POST' :
         form = user_details(request.POST)
         form_1=login_data(request.POST)
-        if form and form_1.is_valid():
+        if form.is_valid() and form_1.is_valid():
             login_data_u=form_1.save(commit=False)
             login_data_u.user_type=1
             login_data_u.save()
@@ -392,8 +393,9 @@ def quiz_result(request, id):
     return render(request, "quiz_result.html", {"user": user, "score": score})
 def admin_user_langSelect(request):
     return render(request,'admin_user_view.html')
-def conference(request):
-    return render(request,'video_conference.html')
+def conference(request,id):
+    req=get_object_or_404(Expert_request,id=id)
+    return render(request,'video_conference.html',{'req':req})
 def expert_request(request,login_id):
     #getting userid from session 
     user_id=request.session.get('userid')
@@ -411,7 +413,7 @@ def expert_dashboard(request):
         return redirect('logins')  #Redirect to login if not authenticated
     # Getting the requests for the expert
     requests=Expert_request.objects.filter(
-        expert_id=expert_id,status=1 #Pending Requests
+        expert_id=expert_id#Pending Requests
     ).select_related('user_id__user_det')     #.prefetch_related('user_id__user_lan_selection')
     return render(request,'expert_request.html',{'requests':requests})
 def accept_request(request, request_id):
@@ -419,7 +421,7 @@ def accept_request(request, request_id):
     Expert_request.objects.filter(id=request_id).update(status=2)
     
     # Redirect to video conference page
-    return redirect('expert_request', request_id=request_id)
+    return redirect('expert_request')
 
 def reject_request(request, request_id):
     # Update request status to rejected (assuming 3 = rejected)
@@ -427,17 +429,22 @@ def reject_request(request, request_id):
     return redirect('expert_request')
 def schedule_conference(request,request_id):
     # Getting  Expert who's id from url and expert_id from session  matches Expert_request Table row
-    expert_request=get_object_or_404(Expert_request,id=request_id,expert_id=request.session.get['expertid']) 
+    expert_id_session=request.session.get('expertid')
+    expert_request=get_object_or_404(Expert_request,id=request_id,expert_id=expert_id_session) 
     if request.method == 'POST':
         try:
-            schedule_date=request.PODT.get('schedule_date')
+            schedule_date=request.POST.get('schedule_date')
             schedule_time=request.POST.get('schedule_time')
+            if not schedule_time or not schedule_date:
+                raise ValueError("Date and Time are Required")
             
             #combine Time and Date
             schedule_datetime = datetime.datetime.strptime(
                 f"{schedule_date} {schedule_time}",
                 "%Y-%m-%d %H:%M"
             )
+            schedule_datetime = timezone.make_aware(schedule_datetime)
+            #check the selected date is in future 
             if schedule_datetime <= timezone.now():
                 return render(request, 'schedule_conference.html', {
                     'error': 'Please select a future date and time',
@@ -457,8 +464,97 @@ def schedule_conference(request,request_id):
                 'request_id': request_id
             })
     # GET request - show form
-    return render(request, 'schedule_conference.html', {
+    return render(request, 'Schedule_conference.html', {
         'today': timezone.now().date(),
         'request_id': request_id
     })
+def user_request(request):
+  # getting the user_id from session
+  user_id=request.session.get('userid')
+  # Fetch the requests based on the user_id from the Expert_request table
+  requests=Expert_request.objects.filter(user_id=user_id).select_related('expert_id__expert')
+  return render(request,'user_view_request.html',{'requests':requests})
+def save_video_url(request,request_id):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        url = data.get('url')
 
+        if url:
+            Video_url = get_object_or_404(Expert_request, id=request_id)
+            
+            Video_url.url = url
+            
+            Video_url.save()
+
+            return JsonResponse({'success': True, 'message': 'URL saved successfully'})
+
+        return JsonResponse({'success': False, 'message': 'No URL provided'}, status=400)
+
+    return JsonResponse({'success': False, 'message': 'Invalid request'}, status=400)
+#API endpoint view function for fetch the latest url from Expert_request table
+def get_latest_url(request,request_id):
+    try:
+        conf_url = Expert_request.objects.get(id=request_id)
+        return JsonResponse({'url': conf_url.url})
+    # catches the user.DoesNotExist Exception from the try block 
+    except Expert_request.DoesNotExist:
+        return JsonResponse({'error':'Not found'},status=404)
+#
+def create_mock_test(request):
+    if request.method == 'POST':
+        form=Mock_Test(request.POST) 
+        if form.is_valid():
+            form.save()
+            return redirect('create-mocktest')
+            
+    else:
+        form=Mock_Test()
+    return render(request,'create_mock_test.html',{'form':form})
+def start_test(request):
+    if request.method == 'POST':
+        language = request.POST.get('language')
+        request.session['test_started'] = True
+        request.session['language'] = language
+        request.session['current_question'] = 0
+        request.session['start_time'] = datetime.datetime.now().isoformat()
+        return redirect('take_test')
+    return render(request, 'start_test.html')
+
+def take_test(request):
+    if not request.session.get('test_started'):
+        return redirect('start_test')
+    
+    language = request.session['language']
+    questions = list(mock_test.objects.filter(language=language))
+    total_questions = len(questions)
+    current_index = request.session['current_question']
+    
+    if request.method == 'POST':
+        form = MockTestForm(request.POST, question=questions[current_index])
+        if form.is_valid():
+            # Save answers in session
+            request.session.setdefault('answers', {})
+            request.session['answers'][str(current_index)] = form.cleaned_data['answer']
+            request.session.modified = True
+            
+            if 'next' in request.POST:
+                current_index += 1
+            elif 'previous' in request.POST:
+                current_index -= 1
+            
+            request.session['current_question'] = current_index
+            return redirect('take_test')
+    
+    form = MockTestForm(question=questions[current_index])
+    
+    progress = ((current_index + 1) / total_questions) * 100
+    
+    context = {
+        'question': questions[current_index],
+        'form': form,
+        'current_index': current_index + 1,
+        'total_questions': total_questions,
+        'progress': progress,
+        'time_limit': 10 * 60  # 10 minutes in seconds
+    }
+    return render(request, 'mock_test.html', context)

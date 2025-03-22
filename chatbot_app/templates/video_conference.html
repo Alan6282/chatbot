@@ -1,3 +1,4 @@
+{% load static %}
 <html>
 
 <head>
@@ -11,9 +12,11 @@
 
 
 <body>
+    {{req.id}}
     <div id="root"></div>
 </body>
-<script src="https://unpkg.com/@zegocloud/zego-uikit-prebuilt/zego-uikit-prebuilt.js"></script>
+{% comment %} <script src="https://unpkg.com/@zegocloud/zego-uikit-prebuilt/zego-uikit-prebuilt.js"></script> {% endcomment %}
+<script src="{% static 'zego-uikit-prebuilt.js' %}"></script>
 <script>
 window.onload = function () {
     function getUrlParams(url) {
@@ -62,7 +65,41 @@ window.onload = function () {
            	showLayoutButton: true,
          
             });
-}
-</script>
+             // Handle the 'Join Now' button click event
+        document.getElementById("joinNowBtn").onclick = function () {
+            // Get the generated URL
+            const generatedUrl = window.location.protocol + '//' + window.location.host + window.location.pathname + '?roomID=' + roomID;
 
+            // Get the appointment ID passed from the view (assuming it's embedded in the page as a data attribute)
+            const appointmentId = {{ req.id }};  // Django variable for the appointment's pk (ID)
+
+            // Send an AJAX request to Django backend to save the URL
+            fetch(`/save-video-url/${appointmentId}/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}',  // Include CSRF token for security
+                },
+                body: JSON.stringify({
+                    url: generatedUrl,
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Link Saved Successfully')
+                    console.log("URL saved successfully!");
+                } else {
+                    console.error("Error saving URL");
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+            });
+        };
+    }
+
+</script>
+    <center>  <button id="joinNowBtn" style="background-color: rgb(0, 234, 255);">Save Video Link</button></center>
+</body>
 </html>

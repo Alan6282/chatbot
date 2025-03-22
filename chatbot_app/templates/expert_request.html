@@ -3,6 +3,16 @@
 <html>
 <head>
     <title>Expert Dashboard</title>
+    <style>
+        .btn-sm {
+            margin: 2px;
+            min-width: 100px;
+        }
+        .text-danger {
+            font-weight: bold;
+            padding: 6px 12px;
+        }
+    </style>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
@@ -32,9 +42,12 @@
                         <a href="{% url 'accept_request' req.id %}" class="btn btn-success btn-sm">Accept</a>
                         <a href="{% url 'reject_request' req.id %}" class="btn btn-danger btn-sm">Reject</a>
                         {% elif req.status == 2 %}  {# Accepted #}
-                        <a href="{% url 'Schedule_conference' req.id %}" class="btn btn-success btn-sm">Schedule Conference</a>
+                        <a href="{% url 'schedule_conference' req.id %}" class="btn btn-success btn-sm">Schedule Conference</a>
                         {% elif req.status == 3 %}   {# Rejected #}
-                        <a href="{% url 'accept_request' req.id %}" class="btn btn-danger btn-sm">Rejected</a>
+                           <span class="text-danger">Rejected</span>
+                        {% elif req.status == 4 %}   {# Scheduled #}
+                           <a href="{% url 'conference' req.id %}" class="btn btn-success btn-sm">Join the Conference</a>
+                        
                         {% endif %}
 
                     </td>

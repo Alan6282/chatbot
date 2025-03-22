@@ -31,11 +31,11 @@ class Expert_det(models.Model):
     experience = models.CharField(max_length=50)
     language = models.CharField(max_length=50)
     contact_number = models.CharField(max_length=10)
-    login_id = models.ForeignKey('user_login', on_delete=models.CASCADE, null=True, blank=True)
+    login_id = models.OneToOneField('user_login', on_delete=models.CASCADE, null=True, blank=True,related_name='expert')
 class Expert_user_chat(models.Model):
     message= models.TextField()
     current_date=models.DateField(auto_now_add=True)
-    current_time=models.TimeField(auto_now_add=True)
+    current_time=models.DateTimeField(auto_now_add=True)
     receiver_id= models.ForeignKey('user_login', on_delete=models.CASCADE, related_name="expert_logid")
     sender_id = models.ForeignKey('user_login',on_delete=models.CASCADE, related_name="user_logid")
 # class Language(models.Model):
@@ -84,6 +84,18 @@ class Expert_request(models.Model):
     current_time=models.TimeField(auto_now_add=True)
     schedule_date=models.DateField(null=True)
     schedule_time=models.TimeField(null=True)
+    url=models.CharField(null=True,max_length=200)
+class mock_test(models.Model):
+       languages=[
+        ('es', 'Spanish'),('fr', 'French',),('de', 'German'),('it', 'Italian'),('ja', 'Japanese'),('zh', 'Mandarin')
+       ] 
+       language = models.CharField(max_length=2, choices=languages)
+       question_text = models.TextField()
+       options1 = models.CharField(max_length=100)
+       options2 = models.CharField(max_length=100)
+       options3 = models.CharField(max_length=100)
+       options4 = models.CharField(max_length=100)
+       correct_answer = models.CharField(max_length=100)
 
 
 

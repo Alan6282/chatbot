@@ -1,0 +1,179 @@
+<!-- mock_test.html -->
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<style>
+
+    /* Add this CSS to your stylesheet */
+.mock-test-container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.1);
+}
+
+.test-header {
+    margin-bottom: 2rem;
+}
+
+.timer {
+    font-size: 1.2rem;
+    color: #e74c3c;
+    margin-bottom: 1rem;
+}
+
+.progress {
+    height: 10px;
+    background: #f0f0f0;
+    border-radius: 5px;
+    overflow: hidden;
+    margin-bottom: 1rem;
+}
+
+.progress-bar {
+    height: 100%;
+    background: #3498db;
+    transition: width 0.3s ease;
+}
+
+.question-count {
+    text-align: right;
+    color: #7f8c8d;
+    margin-bottom: 1rem;
+}
+
+.question-card {
+    background: #f8f9fa;
+    padding: 2rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+}
+
+.question-card h3 {
+    color: #2c3e50;
+    margin-bottom: 1.5rem;
+}
+
+.options {
+    display: grid;
+    gap: 1rem;
+}
+
+.option {
+    background: #ffffff;
+    padding: 1rem;
+    border-radius: 5px;
+    border: 2px solid #e0e0e0;
+    transition: all 0.2s ease;
+}
+
+.option:hover {
+    border-color: #3498db;
+    transform: translateY(-2px);
+}
+
+.option label {
+    margin-left: 1rem;
+    cursor: pointer;
+}
+
+.navigation-buttons {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.btn {
+    padding: 0.8rem 2rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.btn-previous {
+    background: #95a5a6;
+    color: white;
+}
+
+.btn-next {
+    background: #3498db;
+    color: white;
+}
+
+.btn-submit {
+    background: #2ecc71;
+    color: white;
+}
+
+.btn:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+
+</style>
+<div class="mock-test-container">
+    <div class="test-header">
+        <div class="timer">
+            Time Left: <span id="time">10:00</span>
+        </div>
+        <div class="progress">
+            <div class="progress-bar" style="width: {{ progress }}%"></div>
+        </div>
+        <div class="question-count">
+            Question {{ current_index }} of {{ total_questions }}
+        </div>
+    </div>
+
+    <form method="post" id="test-form">
+        {% csrf_token %}
+        <div class="question-card">
+            <h3>{{ question.question_text }}</h3>
+            <div class="options">
+                {% for field in form.answer %}
+                    <div class="option">
+                        {{ field.tag }}
+                        <label for="{{ field.id_for_label }}">{{ field.choice_label }}</label>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="navigation-buttons">
+            {% if current_index > 1 %}
+                <button type="submit" name="previous" class="btn btn-previous">Previous</button>
+            {% endif %}
+            
+            {% if current_index < total_questions %}
+                <button type="submit" name="next" class="btn btn-next">Next</button>
+            {% else %}
+                <button type="submit" name="submit" class="btn btn-submit">Submit Test</button>
+            {% endif %}
+        </div>
+    </form>
+</div>
+
+<script>
+    let timeLeft = {{ time_limit }};
+    const timerElement = document.getElementById('time');
+    
+    function updateTimer() {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerElement.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        
+        if(timeLeft <= 0) {
+            document.getElementById('test-form').submit();
+        } else {
+            timeLeft--;
+            setTimeout(updateTimer, 1000);
+        }
+    }
+    
+    updateTimer();
+</script>
+{% endblock %}

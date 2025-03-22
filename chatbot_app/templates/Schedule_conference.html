@@ -50,7 +50,7 @@
                 </div>
 
                 <div class="mb-4">
-                    <label class="form-label">Conference Time</label>
+                  <label class="form-label">Conference Time</label>
                     <div class="time-inputs">
                         <div>
                             <input type="time" 
@@ -64,7 +64,7 @@
                 </div>
 
                 <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                    <a href="{% url 'expert_dashboard' %}" class="btn btn-secondary">Cancel</a>
+                    <a href="{% url 'expert_request' %}" class="btn btn-secondary">Cancel</a>
                     <button type="submit" class="btn btn-primary">Schedule Conference</button>
                 </div>
             </form>
@@ -80,6 +80,8 @@
         const now = new Date();
         const nextHour = new Date(now.setHours(now.getHours() + 1)).toTimeString().substring(0,5);
         document.getElementById('schedule_time').value = nextHour;
+
+        
     </script>
 </body>
 </html>

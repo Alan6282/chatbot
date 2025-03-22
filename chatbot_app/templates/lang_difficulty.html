@@ -3,18 +3,128 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Difficulty</title>
+    <title>Difficulty Level</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 2rem;
+            text-align: center;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        form {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 500px;
+            transition: transform 0.3s ease;
+        }
+
+        form:hover {
+            transform: translateY(-5px);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #34495e;
+            font-weight: 600;
+        }
+
+        input[type="radio"] {
+            margin-right: 10px;
+            transform: scale(1.2);
+        }
+
+        button {
+            background: #3498db;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: block;
+            margin: 20px auto 0;
+            width: auto;
+        }
+
+        button:hover {
+            background: #2980b9;
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+        }
+
+        /* Style form paragraphs as form groups */
+        form p {
+            margin: 1.5rem 0;
+            padding: 15px;
+            border-radius: 8px;
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+        }
+
+        /* Add these new styles */
+        h1 {
+            margin-bottom: 1.5rem; /* Reduced space below heading */
+        }
+
+        .form-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        form p {
+            text-align: center;
+            width: 100%;  /* Added this line */
+            box-sizing: border-box; 
+        }
+
+        select {
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: 2px solid #e9ecef;
+            font-size: 1em;
+            margin-top: 10px;
+            width: 80%;
+            max-width: 300px;
+            background: white;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 1rem;
+            font-size: 1.1em;
+        }
+    </style>
 </head>
 <body> 
-    <h1>Choose your Difficulty Level</h1>
-    <center>   
+    <h1>Choose Your Difficulty Level</h1>
     <form method="POST">
         {% csrf_token %}
-        {{form.as_p}}  
-    <div>
-    <button type="submit" class="btn btn-primary" style="width: 100px; margin: 0 auto;">Add</button>
-    </div>
+        {{ form.as_p }}  
+        <button type="submit" class="btn btn-primary">Next →</button>
     </form>
-</center>   
 </body>
 </html>

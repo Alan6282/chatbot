@@ -1,0 +1,71 @@
+{% comment %} {% extends "base.html" %} {% endcomment %}
+{% load static %}
+
+{% block title %}Start Mock Test{% endblock %}
+
+{% block content %}
+<div class="container start-test-container">
+    <div class="card shadow-lg">
+        <div class="card-header bg-primary text-white">
+            <h3 class="mb-0"><i class="fas fa-language me-2"></i>Choose Your Test Language</h3>
+        </div>
+        
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                
+                <div class="language-selection">
+                    <label for="language" class="form-label">Select Language:</label>
+                    <select name="language" id="language" class="form-select form-select-lg">
+                        {% for code, lang in mock_test.languages %}
+                            <option value="{{ code }}">{{ lang }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="d-grid gap-2 mt-4">
+                    <button type="submit" class="btn btn-lg btn-success">
+                        <i class="fas fa-play-circle me-2"></i>Start Test
+                    </button>
+                </div>
+            </form>
+        </div>
+        
+        <div class="card-footer text-muted">
+            <small>Test duration: 10 minutes</small>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.start-test-container {
+    max-width: 600px;
+    margin: 4rem auto;
+}
+
+.card-header {
+    padding: 1.5rem;
+}
+
+.language-selection {
+    margin: 2rem 0;
+}
+
+.form-select-lg {
+    font-size: 1.25rem;
+    padding: 1rem;
+}
+
+.btn-lg {
+    padding: 1rem 2rem;
+    font-size: 1.25rem;
+    border-radius: 50px;
+}
+
+.card-footer {
+    background: #f8f9fa;
+}
+</style>
+{% endblock %}
