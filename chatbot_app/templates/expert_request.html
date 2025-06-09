@@ -1,65 +1,57 @@
-{% comment %} expert_requests.html {% endcomment %}
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Expert Dashboard</title>
-    <style>
-        .btn-sm {
-            margin: 2px;
-            min-width: 100px;
-        }
-        .text-danger {
-            font-weight: bold;
-            padding: 6px 12px;
-        }
-    </style>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-</head>
-<body>
-    <div class="container mt-4">
-        <h2 class="mb-4">Pending Video Conference Requests</h2>
-        
-        {% if requests %}
-        <table class="table table-bordered">
-            <thead class="thead-light">
-                <tr>
-                    <th>User Name</th>
-                    <th>Request Date</th>
-                    <th>Request Time</th>
-                    {% comment %} <th>Language</th> {% endcomment %}
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for req in requests %}
-                <tr>
-                    <td>{{ req.user_id.user_det.name}}</td>
-                    <td>{{ req.current_date }}</td>
-                    <td>{{ req.current_time }}</td>
-                    {% comment %} <td>{{ req.user_id.language }}</td> {% endcomment %}
-                    <td>
-                        {% if req.status == 1 %}  {# Pending #}
+{% extends 'expert_header.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    .btn-sm {
+        margin: 2px;
+        min-width: 100px;
+    }
+    .text-danger {
+        font-weight: bold;
+        padding: 6px 12px;
+    }
+</style>
+
+<div class="container mt-4">
+    <h2 class="mb-4">Pending Video Conference Requests</h2>
+
+    {% if requests %}
+    <table class="table table-bordered">
+        <thead class="thead-light">
+            <tr>
+                <th>User Name</th>
+                <th>Request Date</th>
+                <th>Request Time</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for req in requests %}
+            <tr>
+                <td>{{ req.user_id.user_det.name }}</td>
+                <td>{{ req.current_date }}</td>
+                <td>{{ req.current_time }}</td>
+                <td>
+                    {% if req.status == 1 %}
                         <a href="{% url 'accept_request' req.id %}" class="btn btn-success btn-sm">Accept</a>
                         <a href="{% url 'reject_request' req.id %}" class="btn btn-danger btn-sm">Reject</a>
-                        {% elif req.status == 2 %}  {# Accepted #}
+                    {% elif req.status == 2 %}
                         <a href="{% url 'schedule_conference' req.id %}" class="btn btn-success btn-sm">Schedule Conference</a>
-                        {% elif req.status == 3 %}   {# Rejected #}
-                           <span class="text-danger">Rejected</span>
-                        {% elif req.status == 4 %}   {# Scheduled #}
-                           <a href="{% url 'conference' req.id %}" class="btn btn-success btn-sm">Join the Conference</a>
-                        
-                        {% endif %}
-
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        {% else %}
+                    {% elif req.status == 3 %}
+                        <span class="text-danger">Rejected</span>
+                    {% elif req.status == 4 %}
+                        <a href="{% url 'conference' req.id %}" class="btn btn-success btn-sm">Join the Conference</a>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
         <div class="alert alert-info">
             No pending requests found.
         </div>
-        {% endif %}
-    </div>
-</body>
-</html>
+    {% endif %}
+</div>
+{% endblock %}

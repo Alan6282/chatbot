@@ -1,5 +1,5 @@
 from django import forms
-from .models import user_det,user_login,Expert_det,Language_selection,AssessmentQuestion,mock_test
+from .models import user_det,user_login,Expert_det,Language_selection,AssessmentQuestion,mock_test,Language
 
 class user_details(forms.ModelForm):
     class Meta:
@@ -35,20 +35,30 @@ class loginForm(forms.Form):
 class Expert_login(forms.ModelForm):
     gender = forms.ChoiceField(
         choices=Expert_det.OPTIONS,
-        widget=forms.RadioSelect()
+        widget=forms.RadioSelect(attrs={
+            'class': 'custom-radio'
+        })
     )
 
     class Meta:
         model = Expert_det
         fields = ['name', 'gender','age', 'experience', 'language', 'contact_number']
         widgets = {
-            'name': forms.TextInput(attrs={'class': 'form-control rounded-2 py-1'}),
-            'gender':forms.Select(attrs={'class':'form-control rounded-2 py-1'}),
-            'age': forms.NumberInput(attrs={'class': 'form-control rounded-2 py-1'}),
-            'language': forms.TextInput(attrs={'class': 'form-control rounded-2 py-1'}),
-            'experience': forms.TextInput(attrs={'class': 'form-control rounded-2 py-1'}),
-            'contact_number': forms.TextInput(attrs={'class': 'form-control rounded-2 py-1'}),
-        }
+        'name': forms.TextInput(attrs={'class': 'form-control'}),      
+        'age': forms.NumberInput(attrs={'class': 'form-control'}),
+        'language': forms.TextInput(attrs={'class': 'form-control'}),
+        'experience': forms.ClearableFileInput(attrs={'class': 'form-control'}),
+        'contact_number': forms.TextInput(attrs={'class': 'form-control'}),
+    }
+
+class language(forms.ModelForm):
+    class Meta:
+        model=Language
+        fields=['Language_name','code','flag_url','description']
+class LanguageForm(forms.ModelForm):
+    class Meta:
+        model=Language
+        fields=['Language_name','code','flag_url','description']
 class lang_selectionForm(forms.ModelForm):
     class Meta:
         model= Language_selection
@@ -100,3 +110,22 @@ class MockTestForm(forms.ModelForm):
                 (question.options3, question.options3),
                 (question.options4, question.options4),
             ]
+class MockTestLanguageForm(forms.Form):
+    language = forms.ChoiceField(label='Select Language', choices=[])
+
+    def __init__(self, choices, *args, **kwargs):
+        super().__init__(*args,**kwargs)
+        self.fields['language'].choices = choices
+
+class ChangePasswordForm(forms.Form):
+    old_password = forms.CharField(widget=forms.PasswordInput, label="Current Password")
+    new_password = forms.CharField(widget=forms.PasswordInput, label="New Password")
+    confirm_password = forms.CharField(widget=forms.PasswordInput, label="Confirm New Password")
+
+    def clean(self):
+        cleaned_data = super().clean()
+        new = cleaned_data.get("new_password")
+        confirm = cleaned_data.get("confirm_password")
+        if new and confirm and new != confirm:
+            raise forms.ValidationError("New passwords do not match")
+        return cleaned_data

@@ -66,12 +66,12 @@
         {% csrf_token %}
         
         <div class="language-grid">
-            {% for code, name, flag, description in languages %}
+            {% for language in languages %}
             <label class="language-card">
-                <input type="radio" name="language" value="{{ code }}" required>
-                <img src="{{ flag }}" alt="{{ name }} Flag" class="language-flag">
-                <h2>{{ name }}</h2>
-                <p>{{ description }}</p>
+                <input type="radio" name="language" value="{{ language.Language_name }}" required>
+                <img src="{{ language.flag_url }}" alt="{{ name }} Flag" class="language-flag">
+                <h2>{{ language.language_name }}</h2>
+                <p>{{ language.description }}</p>
             </label>
             {% endfor %}
         </div>

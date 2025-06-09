@@ -1,4 +1,6 @@
 from django.shortcuts import render,redirect,get_object_or_404
+from django.views.decorators.http import require_http_methods
+from django.views.decorators.http import require_POST
 from django.db.models import Q
 from .forms import *
 from django.contrib import messages
@@ -7,13 +9,26 @@ from django.http import JsonResponse
 from django.utils import timezone
 import datetime
 import json
+from datetime import timedelta
+from django.contrib.auth import authenticate, login ,update_session_auth_hash
+from django.contrib.auth.hashers import check_password
+from django.views.decorators.csrf import csrf_exempt
+
 # Create your views here.
+
+
+LANGUAGE_NAME_TO_CODE = {
+    "Spanish": "es",
+    "French": "fr",
+    "German": "de",
+    "Italian": "it",
+    "Japanese": "ja",
+    "Mandarin": "zh"
+}
 def index(request):
     return render(request,'index.html')
 def admin(request):
     return render(request,'admin.html')
-# def login(request):
-#     return render(request,'login.html')
 def user_registration(request):  
     if request.method == 'POST' :
         form = user_details(request.POST)
@@ -21,6 +36,7 @@ def user_registration(request):
         if form.is_valid() and form_1.is_valid():
             login_data_u=form_1.save(commit=False)
             login_data_u.user_type=1
+            login_data_u.set_password(form_1.cleaned_data['password'])
             login_data_u.save()
             user_data=form.save(commit=False)
             user_data.login_id=login_data_u
@@ -40,14 +56,27 @@ def logins(request):
             email = form.cleaned_data['email']
             password = form.cleaned_data['password']
             try:
-                user = user_login.objects.get(email=email)
-                if user.password == password:
+                user_session =user_login.objects.get(email=email)
+                user = authenticate(request,email=email,password=password)
+                if user is not None:
+                     
+                      # log the user in and setting sessions by django built-in auth system
+                     login(request, user) 
+                     print('user_type',user.user_type)
                      if user.user_type == 1:
+                      print('users_id',user.id)
                       request.session['userid'] = user.id
                       return redirect('user_home')
                      elif user.user_type == 2 and user.status == 1:
+                      print('expert_id',user.id)
                       request.session['expertid'] = user.id
                       return redirect('expert_home')
+                     elif user.user_type == 3:
+                        request.session['adminid'] = user.id
+                        return redirect('admin') 
+                     
+                     print('expert_id',request.session['expertid'])
+                     print('user_id',request.session['userid'])
 
                 else:
                     messages.error(request,'Invalid Password')
@@ -63,16 +92,21 @@ def user_home(request):
 
 def expert_reg(request):
      if request.method == 'POST' :
-       form = Expert_login(request.POST)
-       form_1 = login_data(request.POST)
-       if form and form_1.is_valid():
+       form = Expert_login(request.POST,request.FILES)
+       form_1 = login_data(request.POST,request.FILES)
+       if form.is_valid() and form_1.is_valid():
             expert_data=form_1.save(commit=False)
+            expert_data.set_password(form_1.cleaned_data['password'])
             expert_data.user_type=2
             expert_data.save()
             user_data=form.save(commit=False)
             user_data.login_id=expert_data
             user_data.save()
-            return redirect('index')
+            return redirect('logins')
+       else:
+            print("Form Errors:", form.errors)  # Debugging
+            print("Form_1 Errors:", form_1.errors)  # Debugging
+
      else:
          form = Expert_login()
          form_1 = login_data()
@@ -149,7 +183,9 @@ def chatinterface(request):
 
 def chat_with_expert(request,login_id):
     user_id=request.session.get('userid')
+    print(user_id)
     login=get_object_or_404(user_login,id=user_id)
+    print(user_id)
     expert_id=get_object_or_404(Expert_det,login_id=login_id)
     expert_name=Expert_det.objects.all()
 
@@ -177,7 +213,11 @@ def chat_with_expert(request,login_id):
         message=request.POST.get("message").strip()
         if message:
           Expert_user_chat.objects.create(sender_id=sender_id,receiver_id=receiver_id,message=message)
-          return redirect('chat_with_expert',login_id=login_id)
+          if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({'status': 'success'})  # Return JSON response
+
+          else:
+           return redirect('chat_with_expert',login_id=login_id)
     return render(request,'chat.html',{'messages':messages,'receiver_id':receiver_id,'sender_id':sender_id,'name':expert_id.name,'expert_name':expert_name})
 def user_view(request):
     data=user_det.objects.all()
@@ -212,46 +252,37 @@ def chat_with_user(request,login_id):
         message=request.POST.get("message").strip()
         if message:
           Expert_user_chat.objects.create(sender_id=sender_id,receiver_id=receiver_id,message=message)
-          return redirect('chat_with_user',login_id=login_id)
-    return render(request,'chat.html',{'messages':messages,'receiver_id':receiver_id,'sender_id':sender_id,'name':user_id.name})
-# def lang_selection(request):
-#     userid=request.session.get('userid')
-#     user=user_login.objects.get(id=userid)
-#     if request.method == 'POST':
-#         selected_lang = request.POST.get('language')
-#         # valid_languages = ['es', 'fr', 'de', 'it', 'ja', 'zh']
-#         # if selected_lang not in valid_languages:
-#         #     return JsonResponse({'status': 'error', 'message': 'Invalid language selected'})
-#                 # Save to database
-#         Language_selection.objects.update_or_create(
-#             user_id=request.userid,
-#             defaults={
-#                 'language': selected_lang
-#             }
-#         )
+                  # NEW: Check if it's an AJAX request
+          if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({'status': 'success'})  # Return JSON response
 
-#     return render(request,'language_selection.html')
+          else:
+           return redirect('chat_with_user',login_id=login_id)
+    return render(request,'chat1.html',{'messages':messages,'receiver_id':receiver_id,'sender_id':sender_id,'name':user_id.name})
 def Assessment(request):
     return render(request,'assessment_quest.html')
 def lang_selection(request):
-        languages = [
-        ('es', 'Spanish', 'https://flagcdn.com/w40/es.png', 
-         'Learn the world\'s second-most spoken native language'),
-        ('fr', 'French', 'https://flagcdn.com/w40/fr.png',
-         'Language of love, fashion, and cuisine'),
-        ('de', 'German', 'https://flagcdn.com/w40/de.png',
-         'Key language for business in Europe'),
-        ('it', 'Italian', 'https://flagcdn.com/w40/it.png',
-         'Discover the language of art and history'),
-        ('ja', 'Japanese', 'https://flagcdn.com/w40/jp.png',
-         'Master the language of anime and technology'),
-        ('zh', 'Mandarin', 'https://flagcdn.com/w40/cn.png',
-         'Learn the world\'s most spoken language')
-                    ]
+        # languages = [
+        # ('es', 'Spanish', 'https://flagcdn.com/w40/es.png', 
+        #  'Learn the world\'s second-most spoken native language'),
+        # ('fr', 'French', 'https://flagcdn.com/w40/fr.png',
+        #  'Language of love, fashion, and cuisine'),
+        # ('de', 'German', 'https://flagcdn.com/w40/de.png',
+        #  'Key language for business in Europe'),
+        # ('it', 'Italian', 'https://flagcdn.com/w40/it.png',
+        #  'Discover the language of art and history'),
+        # ('ja', 'Japanese', 'https://flagcdn.com/w40/jp.png',
+        #  'Master the language of anime and technology'),
+        # ('zh', 'Mandarin', 'https://flagcdn.com/w40/cn.png',
+        #  'Learn the world\'s most spoken language')
+        #             ]
+        languages=list(Language.objects.all())
         
         session_id=request.session.get('userid')
+        print(session_id)
         id=get_object_or_404(user_login,id=session_id)
         user=get_object_or_404(user_det,login_id=id)
+        print(user.id)
         if request.method == 'POST' :
          form = lang_selectionForm(request.POST)
          if form.is_valid():
@@ -285,66 +316,14 @@ def difficulty(request,id):
     else:
        form=Difficulty_form()
     return render(request,'lang_difficulty.html',{'form':form})
-# def quiz_page(request, id):
-#     #current_question_index=[]
-#     #request.session['current_question_index'] = 0
-#     #print("deault value",current_question_index)
-#     print("hi",id)
-#     user = Language_selection.objects.get(id=id)
-#     selected_language = user.language
-#     selected_difficulty = user.difficulty
-#     questions = AssessmentQuestion.objects.filter(language=selected_language, difficulty=selected_difficulty)
-#     print("Total Questions Found:", len(questions))
-#     if not questions:
-#          messages.error(request, "No questions available for the selected language and difficulty.")
-#          return redirect('user_home')
-
-#     # Get the current question index from the session, default to 0 if not set
-#     current_question_index = request.session.get('current_question_index',0)
-
-#     # Check if the current question index is valid
-#     # if current_question_index >= len(questions):
-#     #     return redirect("quiz_result")
-
-#     # Get the current question
-#     #print(current_question_index)
-#     current_question = questions[current_question_index]
-
-#     if request.method == "POST":
-#         form = QuizForm(request.POST, question=current_question)
-#         if form.is_valid():
-#             # Check the answer and update score if correct
-#             user_answer = form.cleaned_data['answer']
-#             score = request.session.get('score', 0)
-
-#             if user_answer == current_question.correct_answer:
-#                 score += 1
-
-#             # Update score in session
-#             request.session['score'] = score
-#             # Move to the next question
-#             if current_question_index < len(questions):
-#                 current_question_index += 1
-#                 request.session['current_question_index'] = current_question_index
-#                 user.score=score
-#                 user.save()
-#                 return redirect('quiz_page', id=id)
-
-#             # After the question is answered, delete the session variable if no longer needed
-#             # del request.session['current_question_index']  # Delete the session variable after use
-#             # Redirect to the same page to load the next question
-#             else:
-#              return redirect('lang_selection') 
-   
-#     else:
-#         form = QuizForm(question=current_question)
-
-#     return render(request, "quiz.html", {"form": form, "question": current_question})
 def quiz_page(request, id):
     user = Language_selection.objects.get(id=id)
     selected_language = user.language
     selected_difficulty = user.difficulty
-    questions = list(AssessmentQuestion.objects.filter(language=selected_language, difficulty=selected_difficulty))
+    selected_language_code = LANGUAGE_NAME_TO_CODE.get(selected_language)
+
+
+    questions = list(AssessmentQuestion.objects.filter(language=selected_language_code, difficulty=selected_difficulty))
 
     if not questions:
         messages.error(request, "No questions available for the selected language and difficulty.")
@@ -405,7 +384,7 @@ def expert_request(request,login_id):
     #save the Value in database with status 1 as Pending 
     Expert_request.objects.create(user_id=user_data,expert_id=expert,status=1)
     #redirect to the same page 
-    return redirect('user_expert_search')
+    return redirect('Join_conf')
 def expert_dashboard(request):
     #getting the expertid from session
     expert_id=request.session.get('expertid')
@@ -510,51 +489,323 @@ def create_mock_test(request):
     else:
         form=Mock_Test()
     return render(request,'create_mock_test.html',{'form':form})
-def start_test(request):
-    if request.method == 'POST':
-        language = request.POST.get('language')
-        request.session['test_started'] = True
-        request.session['language'] = language
-        request.session['current_question'] = 0
-        request.session['start_time'] = datetime.datetime.now().isoformat()
-        return redirect('take_test')
-    return render(request, 'start_test.html')
+def mocktest_start(request):
+    session_id = request.session.get('userid')
+    if not session_id:
+        return redirect('logins')
+    
+    # Get user objects
+    user_id = get_object_or_404(user_login, id=session_id)
+    
+    selected_langs = Language_selection.objects.filter(user_id=user_id)\
+                        .values_list('language', flat=True).distinct()
 
-def take_test(request):
-    if not request.session.get('test_started'):
-        return redirect('start_test')
+    LANGUAGE_NAMES = {
+        'es': 'Spanish',
+        'fr': 'French',
+        'de': 'German',  # Fixed typo in 'German'
+        'it': 'Italian',
+        'ja': 'Japanese',
+        'zh': 'Mandarin'
+    }
     
-    language = request.session['language']
-    questions = list(mock_test.objects.filter(language=language))
-    total_questions = len(questions)
-    current_index = request.session['current_question']
+    lang_choices = [(code, LANGUAGE_NAMES.get(code, code)) for code in selected_langs]
     
+    if not lang_choices:
+        return redirect('language_selection')
+
     if request.method == 'POST':
-        form = MockTestForm(request.POST, question=questions[current_index])
+        form = MockTestLanguageForm(lang_choices, request.POST)
         if form.is_valid():
-            # Save answers in session
-            request.session.setdefault('answers', {})
-            request.session['answers'][str(current_index)] = form.cleaned_data['answer']
+            lang_code = form.cleaned_data['language']
+            # Initialize test session without flushing entire session
+            request.session.update({
+                'test_data': {
+                    'current_index': 0,
+                    'answers': {},
+                    'start_time': timezone.now().isoformat(),
+                    'lang_code': lang_code
+                }
+            })
+            return redirect('take_test', lang_code=lang_code)
+    
+    form = MockTestLanguageForm(lang_choices)
+    return render(request, 'mocktest_language_select.html', {'form': form})
+
+def take_test(request, lang_code):
+    # Check user session
+    if 'userid' not in request.session:
+        return redirect('logins')
+    
+    test_data = request.session.get('test_data', {})
+    
+    # Verify test session matches requested language
+    if test_data.get('lang_code') != lang_code:
+        return redirect('mocktest_start')
+    
+    # Initialize or reset test session
+    if 'reset' in request.GET:
+        del request.session['test_data']
+        return redirect('take_test', lang_code=lang_code)
+    
+    questions = list(mock_test.objects.filter(language=lang_code))
+    total_questions = len(questions)
+    
+    # Handle test completion
+    if test_data.get('current_index', 0) >= total_questions:
+        return redirect('mocktest_results', lang_code=lang_code)
+    
+    # Calculate remaining time
+    start_time = timezone.datetime.fromisoformat(test_data['start_time'])
+    time_limit = timedelta(minutes=10)
+    elapsed = timezone.now() - start_time
+    remaining = time_limit - elapsed
+    
+    if remaining.total_seconds() <= 0:
+        return redirect('mocktest_results', lang_code=lang_code)
+    
+    # Handle question navigation
+    if request.method == 'POST':
+        form = MockTestForm(request.POST, question=questions[test_data['current_index']])
+        if form.is_valid():
+            # Save answer
+            test_data['answers'][str(test_data['current_index'])] = form.cleaned_data['answer']
+            
+            # Update index
+            if 'next' in request.POST and test_data['current_index'] < total_questions - 1:
+                test_data['current_index'] += 1
+            elif 'previous' in request.POST and test_data['current_index'] > 0:
+                test_data['current_index'] -= 1
+            elif 'submit' in request.POST :
+                return redirect('mocktest_results',lang_code=lang_code)
+            
+            # Update session
+            request.session['test_data'] = test_data
             request.session.modified = True
-            
-            if 'next' in request.POST:
-                current_index += 1
-            elif 'previous' in request.POST:
-                current_index -= 1
-            
-            request.session['current_question'] = current_index
-            return redirect('take_test')
     
-    form = MockTestForm(question=questions[current_index])
+    # Prepare context
+    context = {
+        'question': questions[test_data['current_index']],
+        'form': MockTestForm(question=questions[test_data['current_index']]),
+        'current_index': test_data['current_index'] + 1,
+        'total_questions': total_questions,
+        'progress': ((test_data['current_index'] + 1) / total_questions) * 100,
+        'lang_code': lang_code,
+        'time_limit': max(int(remaining.total_seconds()),0)
+    }
     
-    progress = ((current_index + 1) / total_questions) * 100
+    return render(request, 'mock_test.html', context)
+def mocktest_results(request, lang_code):
+    # Check user session
+    if 'userid' not in request.session:
+        return redirect('logins')
+    
+    test_data = request.session.get('test_data', {})
+    
+    # Get test questions and answers
+    questions = list(mock_test.objects.filter(language=lang_code))
+    user_answers = test_data.get('answers', {})
+    
+    results = []
+    score = 0
+    
+    for idx, question in enumerate(questions):
+        user_answer = user_answers.get(str(idx), "No answer")
+        is_correct = user_answer == question.correct_answer
+        if is_correct:
+            score += 1
+            
+        results.append({
+            'question': question,
+            'user_answer': user_answer,
+            'is_correct': is_correct,
+            'options': [
+                question.options1,
+                question.options2,
+                question.options3,
+                question.options4
+            ]
+        })
+    
+    total_questions = len(questions)
+    percentage = (score / total_questions * 100) if total_questions > 0 else 0
     
     context = {
-        'question': questions[current_index],
-        'form': form,
-        'current_index': current_index + 1,
+        'results': results,
+        'score': score,
         'total_questions': total_questions,
-        'progress': progress,
-        'time_limit': 10 * 60  # 10 minutes in seconds
+        'percentage': round(percentage, 2),
+        'lang_code': lang_code
     }
-    return render(request, 'mock_test.html', context)
+    
+    # Clear test session data
+    if 'test_data' in request.session:
+        del request.session['test_data']
+    
+    return render(request, 'mocktest_results.html', context)
+def forgot_password(request):
+    if request.method == 'POST':
+        email =request.POST['email']
+        password=request.POST['password']
+        confirm_password = request.POST['confirm_password']
+        if user_login.objects.filter(email=email).exists():
+            if password == confirm_password:
+                password_update = get_object_or_404(user_login,email=email)
+                password_update.password=password
+                password_update.save()
+                return redirect('logins')
+            else:
+                messages.info(request,"Password Not Matching")
+                return redirect('forgot_password')
+        
+        else:
+            messages.info(request,"Email Doesn t Exists")
+            return redirect('forgot_password')
+        
+    else:
+        
+        return render(request,'forgot-password.html')
+def admin_assess_question(request):
+    assessment_questions = AssessmentQuestion.objects.all()
+    return render(request,'admin_assessment_view.html',{'assessment_questions':assessment_questions})
+def admin_mocktest_question(request):
+    mock_questions=mock_test.objects.all()
+    return render(request,'admin_mocktest_view.html',{'mock_questions':mock_questions})
+def language_create(request):
+    if request.method == 'POST':
+        form=language(request.POST)
+        form.save()
+        redirect('create_lang')
+    else:
+        form=language()
+    return render(request,'lang_creation.html',{'form':form})
+def language_view(request):
+    if request.method == 'POST':
+        lang_id = request.POST.get('lang_id')
+        language_instance = get_object_or_404(Language, id=lang_id)
+        form = language(request.POST, instance=language_instance)
+        if form.is_valid():
+            form.save()
+            return redirect('language_view')
+    else:
+        form = None
+
+        languages = Language.objects.all()
+        return render(request,'admin_language_view.html',{'languages':languages,'edit_form': form})
+def edit_language(request, lang_id):
+    language_instance = get_object_or_404(Language, id=lang_id)
+    if request.method == 'POST':
+        form = language(request.POST, instance=language_instance)
+        if form.is_valid():
+            form.save()
+            return redirect('language_view')
+    else:
+        form = language(instance=language_instance)
+    return render(request, 'edit_language.html', {'form': form})
+def delete_language(request,lang_id):
+    language_instance =get_object_or_404(Language, id=lang_id)
+    language_instance.delete()
+    return redirect('language_view')
+def get_new_messages(request):
+    # Authentication check
+    # getting session id from user or expert
+    user_id = request.session.get('userid')
+    expert_id = request.session.get('expertid')
+    # Check if user_id or expert_id is present in the session
+    if not user_id and not expert_id:
+        return JsonResponse({'error':'Unauthorized'},status=401)
+        return redirect('logins')
+    # Get Request Parameters
+    last_id = request.GET.get('last_id',0)
+    receiver_id =request.GET.get('receiver_id')
+    sender_id =request.GET.get('sender_id')
+
+    #validate parameters
+    try:
+        last_id = int(last_id)
+        receiver = user_login.objects.get(id=receiver_id)
+        sender = user_login.objects.get(id=sender_id)
+    except (ValueError,user_login.DoesNotExist):
+        return JsonResponse({'error':'Invalid Parameters'},status=400)
+    
+    # Check authorization
+    loggedin_id = str(user_id or expert_id)
+    if loggedin_id not in [receiver_id,sender_id]:
+        return JsonResponse({'error':'Unauthorized'},status=401)
+    
+    # Fetch new messages
+    messages = Expert_user_chat.objects.filter(
+        Q(sender_id=receiver,receiver_id=receiver) | Q(sender_id=receiver,receiver_id= sender),
+        id__gt=last_id
+    ).order_by('current_time')
+
+
+    # Serialize messages 
+    message_list =[]
+    for msg in messages:
+        message_list.append({
+            'id':msg.id,
+            'message':msg.message,
+            'sender_id':msg.sender_id.id,
+            'current_time':msg.current_time.strftime("%H:%M"),
+            'current_date':msg.current_date.strftime("%B %d, %Y"),
+            })
+    return JsonResponse({'messages':message_list})
+def logout(request):
+    # clear the session data
+    request.session.flush()
+    return redirect('logins')
+
+def change_password(request):
+    if request.method == "POST":
+        form = ChangePasswordForm(request.POST)
+        if form.is_valid():
+            user = request.user
+            if check_password(form.cleaned_data['old_password'], user.password):
+                user.set_password(form.cleaned_data['new_password'])
+                user.save()
+                update_session_auth_hash(request, user)  # keep user logged in
+                request.session['userid'] = user.id
+                return redirect('user_prof')  # or wherever you want
+            else:
+                form.add_error('old_password', 'Incorrect current password.')
+    else:
+        form = ChangePasswordForm()
+    return render(request, 'user_change_password.html', {'form': form})
+
+def expert_change_password(request):
+    if request.method == "POST":
+        form = ChangePasswordForm(request.POST)
+        if form.is_valid():
+            user = request.user
+            if check_password(form.cleaned_data['old_password'], user.password):
+                user.set_password(form.cleaned_data['new_password'])
+                user.save()
+                update_session_auth_hash(request, user)  # keep user logged in
+                request.session['expertid'] = user.id
+                return redirect('user_prof')  # or wherever you want
+            else:
+                form.add_error('old_password', 'Incorrect current password.')
+    else:
+        form = ChangePasswordForm()
+    return render(request, 'expert_change_password.html', {'form': form})
+def bot(request):
+    user = request.user
+    latest_selection = (
+        Language_selection.objects.filter(user_id=user)
+        .order_by('-current_date', '-current_time')
+        .first()
+    )
+    context = {
+        'user_languages': Language_selection.objects.filter(
+            user_id=request.user
+        ).values('language').distinct(),
+        'levels': Language_selection.DIFFICULTY_LEVELS,
+        'default_language': latest_selection.language if latest_selection else 'Spanish',
+        'default_level': latest_selection.difficulty if latest_selection else 'A1'
+    }
+    return render(request,'bot.html',context)
+def logout_admin(request):
+    # clear the session data
+    request.session.flush()
+    return redirect('logins')

@@ -1,4 +1,4 @@
-{% extends 'expertheader.html' %}
+{% extends 'expert_header.html' %}
 {% block content %}
 {% load static %}
 
@@ -57,6 +57,7 @@ x   <body>
                 <div style="text-align: center;">
                     <br><br>
                 <button type="submit" class="btn btn-primary" style="width: 100px; margin: 0 auto;"> Edit </button>
+                <a href="{% url 'exp_change_pass' %}" class="btn btn-primary" style="margin: 0 auto;">Change Password</a>
             </div>
 
             </td>

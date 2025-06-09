@@ -95,11 +95,28 @@
                                 <a class="nav-link " href="{% url 'user_prof' %}">Profile</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link " href="{% url 'user_expert_search' %}">Experts</a>
+                                <a class="nav-link" href="{% url 'lang_selection' %}">
+                                    Languages
+                                </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link " href="{% static 'user/contact.html' %}">Contact</a>
+                                <a class="nav-link" href="{% url 'Join_conf' %}">
+                                    Conference
+                                </a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'mocktest_start' %}">
+                                    Mock Test
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link " href="{% url 'user_expert_search' %}">Experts</a>
+                            </li>
+                          
+
+                            <div class="">
+                                <a href="{% url 'logout' %}" class="btn btn-outline-primary-dark">Logout</a>
+                            </div>
                             {% comment %} <li class="nav-item">
                                 <a class="nav-link" href="{% static 'user/login.html' %}">Login</a>
                             </li> {% endcomment %}

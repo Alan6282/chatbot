@@ -1,0 +1,539 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat with {{ name }}</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="{% static 'chat/assets/css/vendors/bootstrap.css' %}" rel="stylesheet">
+    <!-- Add this in your head section -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+
+    <style>
+        /* Enhanced Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+    
+        ::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.05);
+            border-radius: 8px;
+        }
+    
+        ::-webkit-scrollbar-thumb {
+            background: rgba(0,132,255,0.3);
+            border-radius: 8px;
+            border: 2px solid transparent;
+            background-clip: padding-box;
+        }
+    
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(0,132,255,0.5);
+        }
+    
+        /* Message Status Indicators */
+        .message-status {
+            display: inline-flex;
+            margin-left: 8px;
+        }
+    
+        .status-sent::after {
+            content: '✓';
+            color: #a0a0a0;
+            font-size: 0.9em;
+        }
+    
+        .status-delivered::after {
+            content: '✓✓';
+            color: #0084ff;
+            font-size: 0.9em;
+        }
+    
+        .status-read::after {
+            content: '✓✓';
+            color: #0084ff;
+            font-size: 0.9em;
+            text-shadow: 0 0 2px rgba(0,132,255,0.3);
+        }
+    
+        /* Typing Indicator */
+        .typing-indicator {
+            display: inline-flex;
+            align-items: center;
+            padding: 10px 15px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-left: 15px;
+        }
+    
+        .typing-dot {
+            width: 6px;
+            height: 6px;
+            background: #0084ff;
+            border-radius: 50%;
+            margin: 0 2px;
+            animation: typing 1.4s infinite ease-in-out;
+        }
+    
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+    
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+    
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-5px); }
+        }
+    
+        /* File Attachment */
+        .file-attachment {
+            position: relative;
+            display: inline-block;
+            margin-right: 15px;
+        }
+    
+        .attachment-input {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+    
+        .attachment-label {
+            display: flex;
+            align-items: center;
+            color: #0084ff;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+    
+        .attachment-label:hover {
+            color: #0066cc;
+        }
+    
+        .attachment-label i {
+            font-size: 1.4rem;
+            margin-right: 8px;
+        }
+    
+        /* File Preview */
+        .file-preview {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background: rgba(0,132,255,0.1);
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+    
+        .file-icon {
+            font-size: 1.2rem;
+            color: #0084ff;
+            margin-right: 10px;
+        }
+    
+        .file-name {
+            font-size: 0.9rem;
+            color: #333;
+        }
+    </style>
+    
+    <style>
+        /* Full-screen layout */
+        body {
+            margin: 0;
+            height: 100vh;
+            background: #f5f6fa;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        /* Main Chat Container */
+        .chat-wrapper {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            width: 100%;
+            background: white;
+        }
+
+        /* Chat Header */
+        .chat-header {
+            padding: 1.5rem 2.5rem;
+            background: linear-gradient(135deg, #0084ff, #0066cc);
+            color: white;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+
+        .chat-header h3 {
+            margin: 0;
+            font-weight: 600;
+            font-size: 1.6rem;
+            letter-spacing: -0.5px;
+        }
+
+        /* Messages Container */
+        .messages-container {
+            flex: 1;
+            padding: 2.5rem;
+            overflow-y: auto;
+            background: #f8f9fa;
+        }
+
+        /* Message Bubbles */
+        .message-row {
+            display: flex;
+            margin-bottom: 1.2rem;
+        }
+
+        .sent {
+            justify-content: flex-end;
+        }
+
+        .received {
+            justify-content: flex-start;
+        }
+
+        .message-bubble {
+            max-width: 70%;
+            min-width: 300px;
+            padding: 1.3rem 1.8rem;
+            border-radius: 1.4rem;
+            position: relative;
+            word-break: break-word;
+            line-height: 1.6;
+            transition: transform 0.2s ease;
+        }
+
+        .message-bubble:hover {
+            transform: translateY(-2px);
+        }
+
+        .sent .message-bubble {
+            background: #0084ff;
+            color: white;
+            border-bottom-right-radius: 6px;
+        }
+
+        .received .message-bubble {
+            background: white;
+            color: #1a1a1a;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+            border-bottom-left-radius: 6px;
+        }
+
+        /* Message Metadata */
+        .message-meta {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            margin-top: 0.8rem;
+            font-size: 0.85rem;
+        }
+
+        .message-time {
+            opacity: 0.85;
+            font-size: 0.8rem;
+        }
+
+        .sent .message-time {
+            color: #cce6ff;
+        }
+
+        .received .message-time {
+            color: #666;
+        }
+
+        /* Date Separator */
+        .date-separator {
+            text-align: center;
+            margin: 2.5rem 0;
+            position: relative;
+        }
+
+        .date-separator span {
+            background: #e8f3ff;
+            padding: 0.6rem 1.5rem;
+            border-radius: 2rem;
+            font-size: 0.9rem;
+            color: #0084ff;
+            display: inline-block;
+        }
+
+        /* Input Area */
+        .input-area {
+            padding: 1.8rem 2.5rem;
+            background: white;
+            border-top: 1px solid #e9ecef;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.03);
+        }
+
+        .message-input {
+            border-radius: 1.5rem;
+            padding: 1.1rem 1.8rem;
+            border: 1px solid #dee2e6;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .message-input:focus {
+            border-color: #0084ff;
+            box-shadow: 0 0 0 3px rgba(0,132,255,0.15);
+        }
+
+        .send-button {
+            background: #0084ff;
+            color: white;
+            border: none;
+            padding: 0.9rem 2rem;
+            border-radius: 1.5rem;
+            margin-left: 1.2rem;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .send-button:hover {
+            background: #0066cc;
+            transform: translateY(-1px);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-wrapper">
+         <!-- Add this hidden div here -->
+         <div id="chat-data" 
+         data-receiver-id="{{ receiver_id.id }}" 
+         data-sender-id="{{ sender_id.id }}"
+         style="display: none;"></div>
+
+         <div class="chat-header d-flex align-items-center justify-content-between">
+            <div class="header-left d-flex align-items-center">
+                <a href="{% url 'user_view' %}" class="me-3 text-white" style="font-size: 1.5rem;">
+                    <i class="bi bi-arrow-left"></i>
+                </a>
+                <div>
+                    <h3 class="mb-0">{{ name }}</h3>
+                    <span class="online-status">● Online</span>
+                </div>
+            </div>
+        </div>
+        
+
+        <!-- Messages Container -->
+        <div class="messages-container">
+
+           
+            
+            {% for message in messages %}
+                <!-- Date Separator -->
+                {% ifchanged message.current_date %}
+                    <div class="date-separator">
+                        <span>{{ message.current_date|date:"F j, Y" }}</span>
+                    </div>
+                {% endifchanged %}
+
+                <!-- Message Row -->
+                <div class="message-row {% if message.sender_id.id == sender_id.id %}sent{% else %}received{% endif %}"
+                data-message-id="{{ message.id}}"
+                data-current-date="{{message.current_date|date:'Y-m-d'}}">
+                    <div class="message-bubble">
+                        <div class="message-content">
+                            {{ message.message }}
+                        </div>
+                        <div class="message-meta">
+                            <span class="message-time">{{ message.current_time|time:"H:i" }}</span>
+                            <span class="message-status status-delivered"></span>
+                        </div>
+                    </div>
+                </div>
+                
+            {% empty %}
+                <div class="text-center mt-5">
+                    <p class="text-muted">Start your conversation with {{ name }}</p>
+                </div>
+            {% endfor %}
+
+            <div class="typing-indicator">
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+            </div>
+        </div>
+
+        <!-- Input Area -->
+        <div class="input-area">
+            <form method="POST" action="" class="d-flex align-items-center">
+                {% csrf_token %}
+
+                <div class="file-attachment">
+                    <input type="file" class="attachment-input" id="file-input">
+                    <label class="attachment-label" for="file-input">
+                        <i class="bi bi-paperclip"></i>
+                    </label>
+                </div>
+
+
+                <input type="text" name="message" class="form-control message-input" 
+                       placeholder="Type your message..." required>
+                <button type="submit" class="btn send-button">
+                    Send
+                </button>
+            </form>
+
+        </div>
+
+        
+            
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="{% static 'chat/assets/js/bootstrap.bundle.min.js' %}"></script>
+    <!--JAVASCRIPT FOR POLLING and Form Submission-->
+    <script>
+     function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+    const csrftoken = getCookie('csrftoken');
+    
+    document.addEventListener('DOMContentLoaded',function(){
+        const chatData = document.getElementById('chat-data');
+        const receiverId = chatData.dataset.receiverId;
+        const senderId = parseInt(chatData.dataset.senderId);
+        let lastMessageId = getLastMessageId();
+      
+        function getLastMessageId(){
+            const messages = document.querySelectorAll('[data-message-id]');
+            return messages.length ? Math.max(...Array.from(messages).map(m => parseInt(m.dataset.messageId))) : 0;
+
+        }
+        function createDateSeparator(dateStr){
+            const separator = document.createElement('div');
+            separator.className= 'date-separator';
+            separator.innerHTML = `<span>${dateStr}</span>`;
+            return separator;
+        }
+        function createMessageElement(msg) {
+            const isSent = msg.sender_id === senderId;
+            const messageRow = document.createElement('div');
+            messageRow.className = `message-row ${isSent ? 'sent' : 'received'}`;
+            messageRow.dataset.messageId = msg.id ;
+            messageRow.dataset.currentDate = msg.current_date;
+
+            messageRow.innerHTML = `
+                <div class="message-bubble">
+                    <div class="message-content">${msg.message}</div>
+                    <div class="message-meta">
+                        <span class="message-time">${msg.current_time}</span>
+                        <span class="message-status status-delivered"></span>
+                    </div>
+                </div>`;
+            return messageRow;
+        }
+        function pollNewMessages() {
+            fetch(`/get_new_messages/?last_id=${lastMessageId}&receiver_id=${receiverId}&sender_id=${senderId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.messages.length) {
+                        const messagesContainer = document.querySelector('.messages-container');
+                        let previousDate = document.querySelector('[data-current-date]')?.dataset.currentDate;
+                        data.messages.forEach(msg => {
+                           if (msg.current_date !== previousDate) {
+                            messagesContainer.appendChild(createDateSeparator(msg.current_date));
+                            previousDate = msg.current_date;
+                           }
+                           messagesContainer.appendChild(createMessageElement(msg));
+                        });
+                        lastMessageId = Math.max(...data.messages.map(msg => msg.id));
+                        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                    }
+                });
+        }
+
+        // Form Submission Handling
+        document.querySelector('form').addEventListener('submit',function(e){
+            e.preventDefault();
+            const formData = new FormData(this);
+
+            fetch(this.action,{
+                method:'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With':'XMLHttpRequest',
+                    'X-CSRFToken': csrftoken
+                }
+            }).then(()=>{
+                const messageText = formData.get('message');
+                this.querySelector('input[name="message"]').value = '';
+            
+                const now = new Date();
+                const msg = {
+                    id: lastMessageId + 1,  // temporary ID just for frontend
+                    message: messageText,
+                    sender_id: senderId,
+                    current_time: now.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'}),
+                    current_date: now.toISOString().split('T')[0]
+                };
+            
+                const messagesContainer = document.querySelector('.messages-container');
+                const lastDateElement = messagesContainer.querySelector('[data-current-date]');
+                const previousDate = lastDateElement ? lastDateElement.dataset.currentDate : null;
+            
+                if (msg.current_date !== previousDate) {
+                    messagesContainer.appendChild(createDateSeparator(msg.current_date));
+                }
+            
+                messagesContainer.appendChild(createMessageElement(msg));
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            
+                lastMessageId += 1;  // So we don't fetch this again
+            
+                // Optionally still call pollNewMessages to catch others
+                pollNewMessages();
+            });
+        });
+        
+        // Polling for new messages every 3 seconds
+        setInterval(pollNewMessages, 3000);
+    });
+    </script>
+</body>
+</html>

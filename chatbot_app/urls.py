@@ -1,11 +1,13 @@
 from django.urls import path
+#importing built-in views for the password reset authenticaton 
+from django.contrib.auth import views as auth_views
 from .views import *
 urlpatterns =[
     path('',index,name='index'),
     path('ad',admin,name='admin'),
-    #path('login',login,name='login'),
     path('user_det',user_registration,name='user_details'),
     path('loginsform',logins,name='logins'),
+    path('forgot-password',forgot_password,name='forgot_password'),
     path('user_home',user_home,name='user_home'),
     path('expert_r',expert_reg,name='expert_register'),
     path('expert_home',expert_home,name='expert_home'),
@@ -17,10 +19,9 @@ urlpatterns =[
     path('user_expert_search/<int:login_id>/',expert_request,name='user_expert_search'),
     path('approve/<int:login_id>/',exp_approve,name='approve'),
     path('reject/<int:login_id>/',exp_reject,name='reject'),
-    path('chatinterface/<int:login_id>/',chat_with_expert,name='chatinterface'),
+    path('chat_with_expert/<int:login_id>/',chat_with_expert,name='chat_with_expert'),
     path('user_view',user_view,name='user_view'),
     path('chat_with_user/<int:login_id>/',chat_with_user,name='chat_with_user'),
-    #path('save-language/',lang_selection,name='lang_selection')
     path('lang_selection',lang_selection,name='lang_selection'),
     path('Assessment',Assessment,name='Assessment'),
     path('Question',Question,name='Question'),
@@ -39,6 +40,24 @@ urlpatterns =[
     path('save-video-url/<int:request_id>/',save_video_url,name="/save-video-url/"),
     path('conference/url-update/<int:request_id>/',get_latest_url,name='url_update'),
     path('create-mocktest',create_mock_test,name='create_mock_test'),
-    path('start-test', start_test, name='start_test'),
-    path('take-test/', take_test, name='take_test')
-  ]
+    path('mocktest-start/',mocktest_start, name='mocktest_start'),
+    path('take-test/<str:lang_code>/', take_test, name='take_test'),
+    path('mocktest_results/<str:lang_code>/', mocktest_results, name='mocktest_results'),
+    path('assessment-view',admin_assess_question,name='admin_assess_question'),
+    path('mock-question',admin_mocktest_question,name='admin_mocktest_question'),
+    path('create_lang',language_create,name='create_lang'),
+    path('language_view',language_view,name='language_view'),
+    path('get_new_messages/',get_new_messages,name="get_new_messages"),
+    path('edit_language<int:lang_id>',edit_language,name='edit_language'),
+    path('delete_language<int:lang_id>',delete_language,name='delete_language'),
+    path('reset_password/',auth_views.PasswordResetView.as_view(template_name="forgot-password.html"),name = "reset_password"),
+    path('reset_password_sent/',auth_views.PasswordResetDoneView.as_view(template_name="password_reset_sent.html"),name = "password_reset_done"),
+    path('reset/<uidb64>/<token>/',auth_views.PasswordResetConfirmView.as_view(template_name="password_reset_form.html"),name = "password_reset_confirm"),
+    path('reset_password_complete/',auth_views.PasswordResetCompleteView.as_view(template_name="password_reset_done.html"),name = "password_reset_complete"),
+    path('logout',logout,name='logout'),
+    path('change-password/', change_password, name='change_password'),
+    path('exp_change_pass',expert_change_password,name='exp_change_pass'),
+    path('bot',bot,name='bot'),
+    path('logout_admin',logout_admin,name='logout_admin')    
+
+    ]

@@ -4,71 +4,137 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Questions</title>
+
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #eef2f7;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            margin-top: 50px;
+            background: white;
+            width: 550px;
+            padding: 35px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        table {
+            width: 100%;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #333;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        td {
+            padding: 10px 0;
+            vertical-align: top;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            margin-top: 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .back-button {
+            background-color: #2196F3;
+            margin-top: 10px;
+        }
+
+        .back-button:hover {
+            background-color: #0b7dda;
+        }
+
+        .button-group {
+            text-align: center;
+        }
+    </style>
 </head>
+
 <body>
-    <center>   
-        <table class="form-class">
-        <h2>Create Questions</h2>
-        <br><br>
+    <center>
+        <div class="container">
+            <h2>Create Questions</h2>
 
-    
-    <form method="POST">
-        {% csrf_token %}
-       
-    <tr>
-        <td><label>Language</label></td>
-        <td>{{form.language}}</td>
-    </tr>
+            <form method="POST">
+                {% csrf_token %}
+                <table class="form-class">
+                    <tr>
+                        <td><label>Language</label></td>
+                        <td>{{ form.language }}</td>
+                    </tr>
 
+                    <tr>
+                        <td><label>Difficulty</label></td>
+                        <td>{{ form.difficulty }}</td>
+                    </tr>
 
-    <tr>
-    
-        <td><label>Difficulty</label></td>
-        <td>{{form.difficulty}}</td>
-    </tr>
+                    <tr>
+                        <td><label>Question</label></td>
+                        <td>{{ form.question_text }}</td>
+                    </tr>
 
-    <tr>
-    
-        <td><label>Question</label></td>
-        <td>{{form.question_text}}</td>
-    </tr>
+                    <tr>
+                        <td><label>Option-1</label></td>
+                        <td>{{ form.options1 }}</td>
+                    </tr>
 
-    <tr>
-    
-        <td><label>Option-1</label></td>
-        <td>{{form.options1}}</td>
-    </tr>
-    <tr>
-    
-        <td><label>Option-2</label></td>
-        <td>{{form.options2}}</td>
-    </tr>
-    <tr>
-    
-        <td><label>Option-3</label></td>
-        <td>{{form.options3}}</td>
-    </tr>
-    <tr>
-    
-        <td><label>Correct Answer</label></td>
-        <td>{{form.correct_answer}}</td>
-    </tr>
-   
-   
-    <tr>
-        
-        <td colspan="2">    
-            <div style="text-align: center;">
-                <br><br>
-            <button type="submit" class="btn btn-primary" style="width: 100px; margin: 0 auto;">Add</button>
+                    <tr>
+                        <td><label>Option-2</label></td>
+                        <td>{{ form.options2 }}</td>
+                    </tr>
+
+                    <tr>
+                        <td><label>Option-3</label></td>
+                        <td>{{ form.options3 }}</td>
+                    </tr>
+
+                    <tr>
+                        <td><label>Correct Answer</label></td>
+                        <td>{{ form.correct_answer }}</td>
+                    </tr>
+                </table>
+
+                <div class="button-group">
+                    <button type="submit">Add</button><br>
+                    <a href="{% url 'admin' %}">
+                        <button type="button" class="back-button">Back to Home</button>
+                    </a>
+                </div>
+            </form>
         </div>
-
-        </td>
-    </tr>   
-</form>
-</table>
-</center>
-
-    
+    </center>
 </body>
 </html>

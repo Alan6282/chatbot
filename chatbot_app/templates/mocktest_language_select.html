@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Start Mock Test</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #eef2f7;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            margin: 50px auto;
+            width: 600px;
+            padding: 30px;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0px 0px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #333;
+        }
+
+        .instructions {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            font-size: 15px;
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .instructions ul {
+            padding-left: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
+        .button-group {
+            margin-top: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        button, .back-button {
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        button:hover {
+            background-color: #45a049;
+            transform: translateY(-2px);
+        }
+
+        .back-button {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .back-button:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        .arrow-icon {
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Select Language for Mock Test</h2>
+
+        <div class="instructions">
+            <h4>📝 Please read before starting:</h4>
+            <ul>
+                <li>You have <strong>10 minutes</strong> to complete the test.</li>
+                <li><strong>Language selection</strong> cannot be changed after starting.</li>
+                <li>Each question has <strong>only one correct answer</strong>.</li>
+                <li>You can navigate between questions using <strong>Next</strong> and <strong>Previous</strong> buttons.</li>
+                <li>If time runs out, your test will be <strong>automatically submitted</strong>.</li>
+                <li>You can submit manually if you finish early.</li>
+            </ul>
+        </div>
+
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="language">Choose Language:</label>
+                <select class="form-control" name="language" id="language" required>
+                    {% for code, name in form.fields.language.choices %}
+                        <option value="{{ code }}">{{ name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="button-group">
+                <a href="{% url 'user_home' %}" class="back-button">
+                    <span class="arrow-icon">←</span> Back to Home
+                </a>
+                <button type="submit">Start Mock Test</button>
+            </div>
+        </form>
+    </div>
+
+</body>
+</html>

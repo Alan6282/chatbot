@@ -104,11 +104,18 @@
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link " href="{% url 'user_expert_search' %}">Experts</a>
+                                <a class="nav-link" href="{% url 'mocktest_start' %}">
+                                    Mock Test
+                                </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link " href="{% static 'user/contact.html' %}">Contact</a>
+                                <a class="nav-link " href="{% url 'user_expert_search' %}">Experts</a>
                             </li>
+                          
+
+                            <div class="">
+                                <a href="{% url 'logout' %}" class="btn btn-outline-primary-dark">Logout</a>
+                            </div>
                             {% comment %} <li class="nav-item">
                                 <a class="nav-link" href="{% static 'user/login.html' %}">Login</a>
                             </li> {% endcomment %}
@@ -134,12 +141,12 @@
                                         Best Language Learning Tool
                                     </p>
                                     <h1 class="text-white mb-8" data-aos="fade-up-sm" data-aos-delay="150">
-                                        A 10X Faster Way To learn A <br />
+                                        A 10X Faster Way To learn <br />
 
                                         <span
 								class="fw-bold text-gradient-2 typed-animation"
 								data-strings='["English", "Spanish", "Hindi", "German"]'
-								>New Language</span>
+								>New Languages</span>
                                     </h1>
                                     <a href="{% static 'user/login.html' %}" class="btn btn-lg btn-gradient-1" data-aos="fade-up-sm" data-aos-delay="200">Start Learning - It's Free</a>
                                 </div>

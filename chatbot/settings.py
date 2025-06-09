@@ -31,14 +31,17 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'chatbot_app',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'chatbot_app'
+    
 ]
+# setting AUTH table for user from default built-in django user table
+AUTH_USER_MODEL = 'chatbot_app.user_login'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -125,3 +128,15 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+MEDIA_URL= '/media/'
+MEDIA_ROOT= BASE_DIR / 'media'
+
+
+
+# Email settings
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587    
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'fluencybotmain@gmail.com'
+EMAIL_HOST_PASSWORD = 'pwoa bbio gank ctky'

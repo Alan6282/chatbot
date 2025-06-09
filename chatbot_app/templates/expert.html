@@ -3,71 +3,172 @@
 {% load static %}
 
 <html>
-    <head>
-        <title>Expert Registration</title>
-        {% comment %} <link rel="stylesheet" href="{% static 'user/css/style.css' %}"> {% endcomment %}
+<head>
+    <title>Expert Registration</title>
+    <style>
+        /* Main container styling */
 
+        * {
+            box-sizing: border-box;
+        }
+        .form-container {
+            max-width: 700px;
+            margin: 2rem auto;
+            width: 90%;
+            padding: 2rem;
+            background: #f8f9fa;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
 
-    </head>
-x   <body>
-    <center>   
-        <table class="form-class">
-        <h2>Expert Registration</h2>
-        <br><br>
+        /* Form element styling */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
 
-        <form method="POST">
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #495057;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            max-width: 100%; /* Add this */
+            padding: 0.375rem 0.75rem;
+            border: 1px solid #ced4da;
+            border-radius: 0.25rem;
+            transition: border-color 0.15s ease-in-out;
+        }
+
+        input:focus {
+            border-color: #80bdff;
+            outline: 0;
+            box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25);
+        }
+
+        /* Custom radio buttons */
+        .radio-group {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .radio-group div {
+            display: flex;
+            align-items: center;
+        }
+
+        .radio-group input[type="radio"] {
+            display: none;
+        }
+
+        .radio-group label {
+            padding: 0.5rem 1rem;
+            border: 2px solid #007bff;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 0;
+        }
+
+        .radio-group input[type="radio"]:checked + label {
+            background-color: #007bff;
+            color: white;
+        }
+
+        /* Submit button */
+        .submit-btn {
+            background: #007bff;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            width: 100%;
+        }
+
+        .submit-btn:hover {
+            background: #0056b3;
+        }
+
+        /* Error messages */
+        .errorlist {
+            color: #dc3545;
+            list-style: none;
+            padding-left: 0;
+            margin-top: 0.25rem;
+            font-size: 0.875em;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h2 class="text-center mb-4">Expert Registration</h2>
+        
+        <form method="POST" enctype="multipart/form-data">
             {% csrf_token %}
-            <tr>
-                <td><label>Name</label></td>
-                <td>{{form.name}}</td>
-            </tr>
-           
-            <tr>
-                <td><label>Gender</label></td>
-                <td>{{form.gender}}</td>
-            </tr>
-
-            <tr>
-                <td><label>Age</label></td>
-                <td>{{form.age}}</td>
-            </tr>
-
-            <tr>
-                <td><label>Language</label></td>
-                <td>{{form.language}}</td>
-            </tr>
-            <tr>
-                <td><label>Experience</label></td>
-                <td>{{form.experience}}</td>
-            </tr>
-           
-            <tr>
-                <td><label>Contact</label></td>
-                <td>{{form.contact_number}}</td>
-            </tr>
-                <td><label>Email</label></td>
-                <td>{{form_1.email}}</td>
-            </tr>
-            <tr>
-                <td><label>password</label></td>
-                <td>{{form_1.password}}</td>
-            </tr>
-           
-       
-        <tr>
             
-            <td colspan="2">    
-                <div style="text-align: center;">
-                    <br><br>
-                <button type="submit" class="btn btn-primary" style="width: 100px; margin: 0 auto;"> Register</button>
+            <!-- Name Field -->
+            <div class="form-group">
+                <label for="id_name">Name</label>
+                {{ form.name }}
             </div>
 
-            </td>
-        </tr>   
-    </form>
-</table>   
- </center>
- 
-    </body>
+            <!-- Gender Field -->
+            <div class="form-group">
+                <label>Gender</label>
+                <div class="radio-group">
+                    {% for radio in form.gender %}
+                    <div>
+                        {{ radio.tag }}
+                        <label for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Age Field -->
+            <div class="form-group">
+                <label for="id_age">Age</label>
+                {{ form.age }}
+            </div>
+
+            <!-- Language Field -->
+            <div class="form-group">
+                <label for="id_language">Language</label>
+                {{ form.language }}
+            </div>
+
+            <!-- Experience Field -->
+            <div class="form-group">
+                <label for="id_experience">Experience</label>
+                {{ form.experience }}
+            </div>
+
+            <!-- Contact Field -->
+            <div class="form-group">
+                <label for="id_contact_number">Contact</label>
+                {{ form.contact_number }}
+            </div>
+
+            <!-- Email Field -->
+            <div class="form-group">
+                <label for="id_email">Email</label>
+                {{ form_1.email }}
+            </div>
+
+            <!-- Password Field -->
+            <div class="form-group">
+                <label for="id_password">Password</label>
+                {{ form_1.password }}
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="submit-btn">Register</button>
+        </form>
+    </div>
+</body>
 </html>
 {% endblock %}

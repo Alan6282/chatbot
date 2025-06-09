@@ -1,5 +1,5 @@
 <!-- mock_test.html -->
-{% extends "base.html" %}
+{% comment %} {% extends "base.html" %} {% endcomment %}
 {% load static %}
 
 {% block content %}
@@ -129,7 +129,7 @@
         </div>
     </div>
 
-    <form method="post" id="test-form">
+    <form method="post" id="test-form" action="{% url 'take_test' lang_code=lang_code %}">
         {% csrf_token %}
         <div class="question-card">
             <h3>{{ question.question_text }}</h3>

@@ -1,0 +1,150 @@
+<style>
+.results-summary {
+    background: #f8f9fa;
+    padding: 20px;
+    margin-bottom: 30px;
+    border-radius: 8px;
+}
+
+.score-card {
+    display: flex;
+    gap: 30px;
+    margin-top: 15px;
+}
+
+.score-item {
+    font-size: 1.2em;
+}
+
+.label {
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+.question-result {
+    border: 1px solid #ddd;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+}
+
+.question-result.correct {
+    border-left: 4px solid #28a745;
+}
+
+.question-result.incorrect {
+    border-left: 4px solid #dc3545;
+}
+
+.options {
+    margin: 15px 0;
+}
+
+.option {
+    padding: 10px;
+    margin: 5px 0;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.user-answer {
+    border: 2px solid #ffc107;
+    background-color: #fff3cd;
+}
+
+.correct-answer {
+    border: 2px solid #28a745;
+    background-color: #d4edda;
+}
+
+.answer-status .correct {
+    color: #28a745;
+    font-weight: bold;
+}
+
+.answer-status .incorrect {
+    color: #dc3545;
+    font-weight: bold;
+}
+
+{% comment %} .retry-button {
+    display: block;
+    width: 200px;
+    margin: 30px auto;
+    padding: 10px;
+    text-align: center;
+    background: #007bff;
+    color: white;
+    border-radius: 5px;
+    text-decoration: none;
+} {% endcomment %}
+
+
+.retry-button, .home-button {
+    display: block;
+    width: fit-content;
+    margin: 20px auto 0;
+    padding: 12px 24px;
+    text-align: center;
+    background: #3498db; /* lighter pleasant blue */
+    color: white;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background 0.3s, transform 0.2s;
+}
+
+.retry-button:hover, .home-button:hover {
+    background: #2980b9;
+    transform: translateY(-2px);
+}
+</style>
+{% comment %} {% extends 'base.html' %} {% endcomment %}
+
+{% block content %}
+<div class="results-summary">
+    <h2>Test Results</h2>
+    <div class="score-card">
+        <div class="score-item">
+            <span class="label">Correct Answers:</span>
+            <span class="value">{{ score }}/{{ total_questions }}</span>
+        </div>
+        <div class="score-item">
+            <span class="label">Percentage:</span>
+            <span class="value">{{ percentage }}%</span>
+        </div>
+    </div>
+</div>
+
+{% for result in results %}
+<div class="question-result {% if result.is_correct %}correct{% else %}incorrect{% endif %}">
+    <h3>Question {{ forloop.counter }}</h3>
+    <div class="question-text">
+        {{ result.question.question_text }}
+    </div>
+    
+    <div class="options">
+        {% for option in result.options %}
+        <div class="option {% if option == result.user_answer %}user-answer{% endif %} 
+                    {% if option == result.question.correct_answer %}correct-answer{% endif %}">
+            {{ option }}
+        </div>
+        {% endfor %}
+    </div>
+    
+    <div class="answer-status">
+        {% if result.is_correct %}
+        <span class="correct">✓ Correct</span>
+        {% else %}
+        <span class="incorrect">✗ Incorrect. Correct answer: {{ result.question.correct_answer }}</span>
+        {% endif %}
+    </div>
+</div>
+{% endfor %}
+
+<div class="button-group">
+
+        <a href="{% url 'mocktest_start' %}" class="retry-button">Take Another Test</a>
+        <a href="{% url 'user_home' %}" class="home-button">🏠 Back to Home</a>
+</div>
+{% endblock %}

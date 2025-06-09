@@ -1,0 +1,17 @@
+
+{
+    "A1": {
+        "sections": ["Alphabet", "Basic Phrases"],
+        "prompt_templates": {
+            "Alphabet": "Teach basic {language} alphabet with simple examples",
+            "Basic Phrases": "Teach common {language} phrases for beginners"
+        }
+    },
+    "A2": {
+        "sections": ["Grammar", "Vocabulary"],
+        "prompt_templates": {
+            "Grammar": "Explain {language} grammar rules for elementary level",
+            "Vocabulary": "Create {language} vocabulary list for A2 level"
+        }
+    }
+}

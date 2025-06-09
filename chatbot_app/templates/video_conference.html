@@ -15,8 +15,8 @@
     {{req.id}}
     <div id="root"></div>
 </body>
-{% comment %} <script src="https://unpkg.com/@zegocloud/zego-uikit-prebuilt/zego-uikit-prebuilt.js"></script> {% endcomment %}
-<script src="{% static 'zego-uikit-prebuilt.js' %}"></script>
+<script src="https://unpkg.com/@zegocloud/zego-uikit-prebuilt/zego-uikit-prebuilt.js"></script>
+{% comment %} <script src="{% static 'zego-uikit-prebuilt.js' %}"></script> {% endcomment %}
 <script>
 window.onload = function () {
     function getUrlParams(url) {
@@ -36,8 +36,8 @@ window.onload = function () {
     const roomID = getUrlParams(window.location.href)['roomID'] || (Math.floor(Math.random() * 10000) + "");
     const userID = Math.floor(Math.random() * 10000) + "";
     const userName = "userName" + userID;
-    const appID = 1774762153;
-    const serverSecret = "5b8e4fc12895074f25d225e3dea5be4c";
+    const appID = 1129577729;
+    const serverSecret = "070b4dd1a9ab421986d20795dcb36b79";
     const kitToken = ZegoUIKitPrebuilt.generateKitTokenForTest(appID, serverSecret, roomID, userID, userName);
 
     

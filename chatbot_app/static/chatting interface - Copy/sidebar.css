@@ -1,0 +1,180 @@
+/* Updated CSS for sidebar */
+
+:root {
+    /* Add new variable for sidebar */
+    --sidebar-bg: #101623;
+    --sidebar-text: #edf3ff;
+    --sidebar-border: #283045;
+}
+
+body.light-theme {
+    /* Light theme sidebar colors */
+    --sidebar-bg: #ffffff;
+    --sidebar-text: #090c13;
+    --sidebar-border: #e0e0e0;
+
+}
+
+.sidebar {
+    background: var(--sidebar-bg);
+    color: var(--sidebar-text);
+    position: fixed;
+    left: -300px;
+    top: 0;
+    height: 100%;
+    width: 300px;
+    border-right: 1px solid var(--sidebar-border);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1000;
+    overflow-y: auto;
+}
+
+.sidebar.active {
+    left: 0;
+    box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
+}
+
+#sidebar-toggle {
+    position: fixed;
+    left: 20px;
+    top: 20px;
+    background: var(--sidebar-bg);
+    border: 1px solid var(--sidebar-border);
+    border-radius: 8px;
+    padding: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 1001;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+#sidebar-toggle:hover {
+    background: var(--secondary-hover-color);
+}
+
+#sidebar-toggle span {
+    font-size: 1.5rem;
+    color: var(--sidebar-text);
+    transition: transform 0.3s ease;
+}
+
+.sidebar.active + #sidebar-toggle {
+    left: 260px;
+    transform: rotate(180deg);
+}
+
+.sidebar-content {
+    padding: 20px;
+}
+
+.sidebar-header {
+    margin-bottom: 25px;
+}
+
+.sidebar-header h3 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+}
+
+.sidebar-divider {
+    height: 1px;
+    background: var(--secondary-hover-color);
+}
+
+.sidebar-section {
+    margin-top: 20px;
+}
+
+.sidebar-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 20px;
+    margin: 8px 15px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: var(--text-color);
+    background: rgba(255, 255, 255, 0.05);
+    
+    
+   
+    
+}
+
+.sidebar-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateX(8px);
+}
+.sidebar-item span.material-symbols-rounded {
+    font-size: 1.2rem;
+    color: #1d76fd;
+}
+
+/* Adjust main container */
+.container {
+    margin-left: 0;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    padding-left: 60px; /* Space for closed sidebar toggle */
+    position:relative;
+    z-index:1;
+}
+
+.sidebar.active ~ .container {
+    margin-left: 300px;
+    padding-left: 20px;
+    width: calc(100% -300px);
+}
+/* Input Container Adjustment */
+.prompt-container {
+    width: 100%;
+    margin-left: 30px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sidebar.active ~ .container .prompt-container {
+    margin-left: 170px;
+}
+
+
+
+/* Sidebar Selection Controls */
+.sidebar-selection {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 20px;
+    background: var(--sidebar-bg);
+    border-top: 1px solid var(--sidebar-border);
+}
+
+.sidebar-selection .selection-group {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.sidebar-selection select {
+    width: 100%;
+    padding: 10px 15px;
+    border: 2px solid var(--primary-color);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--sidebar-text);
+    font-size: 0.95rem;
+}
+
+.sidebar-selection select option {
+    background: var(--sidebar-bg);
+    color: var(--sidebar-text);
+}
+
+/* Adjust main content padding */
+.sidebar-content {
+    padding-bottom: 150px; /* Make space for selection controls */
+    position: relative;
+    min-height: 100%;
+}

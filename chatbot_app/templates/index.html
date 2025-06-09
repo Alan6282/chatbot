@@ -49,9 +49,9 @@
                     <div class="navbar-content-inner ms-lg-auto d-flex flex-column flex-lg-row align-lg-center gap-4 gap-lg-10 p-2 p-lg-0">
                         <ul class="navbar-nav gap-lg-2 gap-xl-5">
                             <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle active" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" aria-current="page">
+                                {% comment %} <a class="nav-link dropdown-toggle active" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" aria-current="page">
                                     Home
-                                </a>
+                                </a> {% endcomment %}
                                 {% comment %} <ul class="dropdown-menu">
                                     <li><a class="dropdown-item" href="{% static 'user/index.html'  %}">Home one</a></li>
                                     <li><a class="dropdown-item" href="{% static 'user/index-lite.html' %}" >Home one lite</a></li>
@@ -88,9 +88,7 @@
                                     <li><a class="dropdown-item " href="{% static 'user/404-lite.html' %}">404 lite</a></li> {% endcomment %}
                                 </ul>
                                 <li class="nav-item">
-                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    Languages
-                                </a>
+                               
                                 </li>
                             </li>
                             {% comment %} <li class="nav-item">
@@ -127,12 +125,12 @@
                                         Best Language Learning Tool
                                     </p>
                                     <h1 class="text-white mb-8" data-aos="fade-up-sm" data-aos-delay="150">
-                                        A 10X Faster Way To learn A <br />
+                                        A 10X Faster Way To learn  <br />
 
                                         <span
 								class="fw-bold text-gradient-2 typed-animation"
 								data-strings='["English", "Spanish", "Hindi", "German"]'
-								>New Language</span>
+								>New Languages</span>
                                     </h1>
                                     <a href="{% static 'user/login.html' %}" class="btn btn-lg btn-gradient-1" data-aos="fade-up-sm" data-aos-delay="200">Start Learning - It's Free</a>
                                 </div>

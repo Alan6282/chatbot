@@ -61,7 +61,7 @@
 <div class="divider-with-text my-10">
 <span>Or sign in with email</span>
 </div>
-<form  method="post">
+<form  method="post" class="vstack gap-4">
     {% csrf_token %}
     <div class="text-start">
         <div class="input-group with-icon">
@@ -88,13 +88,14 @@
                 </svg>
             </span>
             {{ form.password }}
+           
         </div>
-    </div>
+    
     
 {% comment %} <input class="form-control rounded-2 py-4" placeholder="Password" type="password" name="password"/> {% endcomment %}
-</div>
+{% comment %} </div> {% endcomment %}
 <div class="form-text mt-2">
-<a class="text-decoration-none" href="{% static 'user/forgot-password.html' %}">Forgot Password?</a>
+   <a class="text-decoration-none" href="{% url 'reset_password' %}">Forgot Password?</a>
 </div>
 </div>
 <div class="text-center">

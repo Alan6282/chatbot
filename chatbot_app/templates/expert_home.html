@@ -96,12 +96,14 @@
                             <li class="nav-item">
                                 <a class="nav-link " href="{% url 'user_view' %}">user</a>
                             </li>
-                            {% comment %} <li class="nav-item">
-                                <a class="nav-link " href="{% url 'chat_with_user' %}">Chat</a>
-                            </li> {% endcomment %}
+                        
                             <li class="nav-item">
                                 <a class="nav-link " href="{% url 'expert_request' %}">Request</a>
                             </li>
+
+                            <div class="">
+                                <a href="{% url 'logout' %}" class="btn btn-outline-primary-dark">Logout</a>
+                            </div>
                             {% comment %} <li class="nav-item">
                                 <a class="nav-link" href="{% static 'user/login.html' %}">Login</a>
                             </li> {% endcomment %}
